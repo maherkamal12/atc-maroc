@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+dist
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+npm-debug.log*
+yarn-error.log*
+.vercel
+
+# local lead sink written by the contact/newsletter API routes
+.data
