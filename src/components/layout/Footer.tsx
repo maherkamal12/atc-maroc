@@ -197,6 +197,32 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
         </div>
 
+        {/* -------------------------------------------------------------- payment */}
+        <div className="border-t border-white/10">
+          <div className="container flex flex-wrap items-center justify-between gap-4 py-6">
+            <p className="text-[.78rem] font-bold uppercase tracking-[.12em] text-white/45">
+              {t(ui.footer.paymentTitle, locale)}
+            </p>
+            <ul className="flex flex-wrap items-center gap-2.5">
+              {([
+                ['Visa', 'VISA'],
+                ['Mastercard', 'Mastercard'],
+                ['CMI', 'CMI'],
+                ['CashPlus', 'CashPlus'],
+                ['Cash', 'Cash'],
+              ] as const).map(([key, label]) => (
+                <li
+                  key={key}
+                  className="flex h-8 min-w-[68px] items-center justify-center rounded-lg border border-white/15 bg-white/[.07] px-3 text-[.68rem] font-black uppercase tracking-[.06em] text-white/70"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+            <p className="text-[.76rem] text-white/45">{t(ui.footer.paymentNote, locale)}</p>
+          </div>
+        </div>
+
         {/* ---------------------------------------------------------------- bottom */}
         <div className="border-t border-white/10">
           <div className="container flex flex-col items-center justify-between gap-4 py-6 text-[.78rem] text-white/50 md:flex-row">

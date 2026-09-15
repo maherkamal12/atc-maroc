@@ -504,6 +504,11 @@ export const ui = {
     terms: { ar: 'شروط الاستخدام', fr: "Conditions d'utilisation" },
     privacy: { ar: 'سياسة الخصوصية', fr: 'Politique de confidentialité' },
     cookies: { ar: 'ملفات تعريف الارتباط', fr: 'Cookies' },
+    paymentTitle: { ar: 'طرق الدفع المقبولة', fr: 'Moyens de paiement acceptés' },
+    paymentNote: {
+      ar: 'دفع آمن · فاتورة رسمية لكل عملية',
+      fr: 'Paiement sécurisé · facture pour chaque opération',
+    },
     sitemap: { ar: 'خريطة الموقع', fr: 'Plan du site' },
   },
 
