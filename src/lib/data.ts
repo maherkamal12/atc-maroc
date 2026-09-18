@@ -1,5 +1,5 @@
 import { and, asc, count, desc, eq, ilike, or, sql } from "drizzle-orm";
-import { db } from "@/db";
+import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
 import {
   categories,
   contactMessages,
@@ -97,11 +97,12 @@ export function postTag(post: Post, locale: string) {
 
 export async function getServices(): Promise<Service[]> {
   await ensureSeeded();
+  if (!canQueryDatabase()) return fallbackServices;
   try {
     const rows = await db.select().from(services).orderBy(asc(services.sort));
     return rows.length ? rows : fallbackServices;
   } catch (error) {
-    console.error("[data] getServices", error);
+    markDatabaseUnavailable("getServices", error);
     return fallbackServices;
   }
 }
@@ -113,11 +114,12 @@ export async function getService(slug: string): Promise<Service | null> {
 
 export async function getCategories(): Promise<Category[]> {
   await ensureSeeded();
+  if (!canQueryDatabase()) return fallbackCategories;
   try {
     const rows = await db.select().from(categories).orderBy(asc(categories.sort));
     return rows.length ? rows : fallbackCategories;
   } catch (error) {
-    console.error("[data] getCategories", error);
+    markDatabaseUnavailable("getCategories", error);
     return fallbackCategories;
   }
 }
@@ -156,13 +158,28 @@ function filterFallback(query: ProductQuery) {
   return list;
 }
 
+function paginateFallback(query: ProductQuery, page: number, pageSize: number): ProductPage {
+  const list = filterFallback(query);
+  const start = (page - 1) * pageSize;
+  return {
+    items: list.slice(start, start + pageSize),
+    total: list.length,
+    page,
+    pages: Math.max(1, Math.ceil(list.length / pageSize)),
+    pageSize,
+  };
+}
+
 /** Paged catalog listing (no prices — quote only). */
 export async function getProductsPage(
   query: ProductQuery & { page?: number; pageSize?: number },
 ): Promise<ProductPage> {
-  await ensureSeeded();
   const page = Math.max(1, query.page ?? 1);
   const pageSize = Math.min(60, Math.max(4, query.pageSize ?? 24));
+
+  await ensureSeeded();
+
+  if (!canQueryDatabase()) return paginateFallback(query, page, pageSize);
 
   try {
     const filters = [];
@@ -202,22 +219,18 @@ export async function getProductsPage(
       pageSize,
     };
   } catch (error) {
-    console.error("[data] getProductsPage", error);
-    const list = filterFallback(query);
-    const start = (page - 1) * pageSize;
-    return {
-      items: list.slice(start, start + pageSize),
-      total: list.length,
-      page,
-      pages: Math.max(1, Math.ceil(list.length / pageSize)),
-      pageSize,
-    };
+    markDatabaseUnavailable("getProductsPage", error);
+    return paginateFallback(query, page, pageSize);
   }
 }
 
 export async function getProducts(query: ProductQuery = {}): Promise<Product[]> {
-  await ensureSeeded();
   const { category, q, sort = "newest", featured, limit } = query;
+  await ensureSeeded();
+  if (!canQueryDatabase()) {
+    const list = filterFallback(query);
+    return limit ? list.slice(0, limit) : list;
+  }
   try {
     const filters = [];
     if (category) filters.push(eq(products.categorySlug, category));
@@ -246,14 +259,22 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
     if (category || q || featured) return [];
     throw new Error("empty");
   } catch (error) {
-    console.error("[data] getProducts", error);
+    markDatabaseUnavailable("getProducts", error);
     const list = filterFallback(query);
     return limit ? list.slice(0, limit) : list;
   }
 }
 
+function countFallbackByCategory(): Record<string, number> {
+  return generatedProducts.reduce<Record<string, number>>((acc, item) => {
+    acc[item.categorySlug] = (acc[item.categorySlug] ?? 0) + 1;
+    return acc;
+  }, {});
+}
+
 export async function countProductsByCategory(): Promise<Record<string, number>> {
   await ensureSeeded();
+  if (!canQueryDatabase()) return countFallbackByCategory();
   try {
     const rows = await db
       .select({ slug: products.categorySlug, value: count() })
@@ -263,21 +284,22 @@ export async function countProductsByCategory(): Promise<Record<string, number>>
       acc[row.slug] = Number(row.value);
       return acc;
     }, {});
-  } catch {
-    return generatedProducts.reduce<Record<string, number>>((acc, item) => {
-      acc[item.categorySlug] = (acc[item.categorySlug] ?? 0) + 1;
-      return acc;
-    }, {});
+  } catch (error) {
+    markDatabaseUnavailable("countProductsByCategory", error);
+    return countFallbackByCategory();
   }
 }
 
 export async function getProduct(slug: string): Promise<Product | null> {
   await ensureSeeded();
+  if (!canQueryDatabase()) {
+    return fallbackProducts.find((item) => item.slug === slug) ?? null;
+  }
   try {
     const rows = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
     if (rows[0]) return rows[0];
   } catch (error) {
-    console.error("[data] getProduct", error);
+    markDatabaseUnavailable("getProduct", error);
   }
   return fallbackProducts.find((item) => item.slug === slug) ?? null;
 }
@@ -293,13 +315,14 @@ export async function getRelatedProducts(
 
 export async function getPosts(limit?: number): Promise<Post[]> {
   await ensureSeeded();
+  if (!canQueryDatabase()) return limit ? fallbackPosts.slice(0, limit) : fallbackPosts;
   try {
     const base = db.select().from(posts).orderBy(desc(posts.publishedAt));
     const rows = limit ? await base.limit(limit) : await base;
     if (rows.length) return rows;
     throw new Error("empty");
   } catch (error) {
-    console.error("[data] getPosts", error);
+    markDatabaseUnavailable("getPosts", error);
     return limit ? fallbackPosts.slice(0, limit) : fallbackPosts;
   }
 }
@@ -318,8 +341,9 @@ export async function createMessage(input: {
   subject?: string;
   message?: string;
   locale?: string;
-}): Promise<ContactMessage> {
+}): Promise<ContactMessage | null> {
   await ensureSeeded();
+  if (!canQueryDatabase()) return null;
   const [row] = await db
     .insert(contactMessages)
     .values({
@@ -335,10 +359,11 @@ export async function createMessage(input: {
 }
 
 export async function listMessages(): Promise<ContactMessage[]> {
+  if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt)).limit(200);
   } catch (error) {
-    console.error("[data] listMessages", error);
+    markDatabaseUnavailable("listMessages", error);
     return [];
   }
 }
@@ -357,6 +382,7 @@ export type NewOrderInput = {
 /** Creates a quote request. No amounts: prices are communicated on request. */
 export async function createOrder(input: NewOrderInput) {
   await ensureSeeded();
+  if (!canQueryDatabase()) return null;
   const all = await getProducts();
   const resolved = input.items
     .map((item) => {
@@ -404,19 +430,21 @@ export async function createOrder(input: NewOrderInput) {
 }
 
 export async function listOrders(): Promise<Order[]> {
+  if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(200);
   } catch (error) {
-    console.error("[data] listOrders", error);
+    markDatabaseUnavailable("listOrders", error);
     return [];
   }
 }
 
 export async function listAllOrderItems(): Promise<OrderItem[]> {
+  if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(orderItems).limit(1000);
   } catch (error) {
-    console.error("[data] listAllOrderItems", error);
+    markDatabaseUnavailable("listAllOrderItems", error);
     return [];
   }
 }
@@ -430,6 +458,16 @@ export async function markMessageRead(id: number, isRead: boolean) {
 }
 
 export async function dashboardStats() {
+  if (!canQueryDatabase()) {
+    return {
+      messages: 0,
+      unread: 0,
+      orders: 0,
+      orderItems: 0,
+      products: generatedProducts.length,
+      categories: generatedCategories.length,
+    };
+  }
   try {
     const [messageRow] = await db.select({ value: sql<number>`count(*)::int` }).from(contactMessages);
     const [unreadRow] = await db
@@ -449,7 +487,7 @@ export async function dashboardStats() {
       categories: categoryRow?.value ?? 0,
     };
   } catch (error) {
-    console.error("[data] dashboardStats", error);
+    markDatabaseUnavailable("dashboardStats", error);
     return {
       messages: 0,
       unread: 0,

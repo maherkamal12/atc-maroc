@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { db } from "@/db";
+import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
 import { categories, posts, products, services } from "@/db/schema";
 import { postSeed, serviceSeed } from "./seed-data";
 import { generatedCategories, generatedProducts } from "./products.generated";
@@ -80,10 +80,14 @@ async function seedNow() {
 }
 
 export function ensureSeeded(): Promise<void> {
+  if (!canQueryDatabase()) {
+    return Promise.resolve();
+  }
   if (!seedPromise) {
     seedPromise = seedNow().catch((error) => {
+      // Drop the cached promise so seeding is retried once the database is back.
       seedPromise = null;
-      console.error("[seed] failed:", error);
+      markDatabaseUnavailable("seed", error);
     });
   }
   return seedPromise;
