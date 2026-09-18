@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
 
-    const { order, itemsCount } = await createOrder({
+    const created = await createOrder({
       customerName,
       email,
       phone,
@@ -36,10 +36,15 @@ export async function POST(request: Request) {
       items,
     });
 
+    if (!created) {
+      // No database configured: report it instead of silently dropping the request.
+      return NextResponse.json({ ok: false, error: "database_unavailable" }, { status: 503 });
+    }
+
     return NextResponse.json({
       ok: true,
-      reference: order.reference,
-      itemsCount,
+      reference: created.order.reference,
+      itemsCount: created.itemsCount,
     });
   } catch (error) {
     console.error("[api/orders]", error);
