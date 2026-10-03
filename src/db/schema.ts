@@ -163,8 +163,21 @@ export const customPages = pgTable("custom_pages", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Uploaded / registered files for the media library. */
+export const mediaAssets = pgTable("media_assets", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull().unique(),
+  pathname: text("pathname").notNull().default(""),
+  filename: text("filename").notNull().default(""),
+  contentType: varchar("content_type", { length: 120 }).notNull().default(""),
+  size: integer("size").notNull().default(0),
+  storage: varchar("storage", { length: 20 }).notNull().default("url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type OrderItem = typeof orderItems.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type ContentBlock = typeof contentBlocks.$inferSelect;
 export type NavItem = typeof navItems.$inferSelect;
 export type CustomPage = typeof customPages.$inferSelect;
+export type MediaAsset = typeof mediaAssets.$inferSelect;

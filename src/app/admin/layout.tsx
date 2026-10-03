@@ -11,7 +11,7 @@ const links = [
   { href: "/admin/categories", label: "Catégories", icon: "🗂️" },
   { href: "/admin/services", label: "Services", icon: "🛠️" },
   { href: "/admin/blog", label: "Blog", icon: "✍️" },
-  { href: "/admin/media", label: "Images", icon: "🖼️" },
+  { href: "/admin/media", label: "Médiathèque", icon: "🖼️" },
   { href: "/admin/pages", label: "Pages", icon: "📄" },
   { href: "/admin/content", label: "Textes & photos", icon: "📝" },
   { href: "/admin/menu", label: "Menu & logo", icon: "🧭" },

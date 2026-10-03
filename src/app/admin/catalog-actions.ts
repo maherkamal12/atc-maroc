@@ -347,6 +347,25 @@ export async function replaceMediaAction(_prev: ActionState, formData: FormData)
   return { error: null, ok: true };
 }
 
+export async function registerMediaUrlAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await guard();
+  const { registerAsset } = await import("@/lib/media");
+  const url = str(formData, "url").trim();
+  if (!url) return { error: "URL obligatoire." };
+  const row = await registerAsset({ url, filename: url.split("/").pop() ?? url, storage: "url" });
+  revalidatePath("/admin/media");
+  if (!row) return { error: "Impossible d'enregistrer l'URL (base indisponible)." };
+  return { error: null, ok: true };
+}
+
+export async function deleteMediaAction(formData: FormData) {
+  await guard();
+  const { deleteAsset } = await import("@/lib/media");
+  const result = await deleteAsset(num(formData, "id"), str(formData, "url"));
+  revalidatePath("/admin/media");
+  if (!result.ok) redirect(`/admin/media?error=${encodeURIComponent(result.error)}`);
+}
+
 export async function archiveMessageAction(formData: FormData) {
   await guard();
   const result = await archiveMessage(num(formData, "id"), str(formData, "archived") !== "true");
