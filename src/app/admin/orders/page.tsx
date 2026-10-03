@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { setOrderStatus } from "../actions";
 import { listAllOrderItems, listOrders } from "@/lib/data";
+import { DeleteOrderButton } from "./delete-order-button";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +73,7 @@ export default async function AdminOrdersPage({
                 <th className="px-4 py-3 text-start">القطع</th>
                 <th className="px-4 py-3 text-start">التاريخ</th>
                 <th className="px-4 py-3 text-start">الحالة</th>
+                <th className="px-4 py-3 text-start">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -133,6 +135,17 @@ export default async function AdminOrdersPage({
                           موافق
                         </button>
                       </form>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold"
+                        >
+                          فتح
+                        </Link>
+                        <DeleteOrderButton id={order.id} reference={order.reference} compact />
+                      </div>
                     </td>
                   </tr>
                 );

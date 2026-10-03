@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOrderWithItems } from "@/lib/admin-data";
-import { archiveOrderAction, deleteOrderAction } from "../../catalog-actions";
+import { archiveOrderAction } from "../../catalog-actions";
+import { DeleteOrderButton } from "../delete-order-button";
 import { setOrderStatus } from "../../actions";
 import { AdminHeader } from "../../_ui";
 
@@ -55,10 +56,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <input type="hidden" name="archived" value={String(order.archived)} />
             <button className="btn btn-outline">{order.archived ? "إلغاء الأرشفة" : "أرشفة"}</button>
           </form>
-          <form action={deleteOrderAction}>
-            <input type="hidden" name="id" value={order.id} />
-            <button className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700">حذف</button>
-          </form>
+          <DeleteOrderButton id={order.id} reference={order.reference} />
           <Link href="/admin/orders" className="btn btn-outline">
             رجوع
           </Link>

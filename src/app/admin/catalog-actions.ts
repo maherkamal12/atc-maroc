@@ -395,5 +395,5 @@ export async function deleteOrderAction(formData: FormData) {
   const result = await deleteOrder(num(formData, "id"));
   revalidatePath("/admin/orders");
   revalidatePath("/admin");
-  if (!result.ok) redirect("/admin/orders?db=error");
+  redirect(result.ok ? "/admin/orders" : "/admin/orders?db=error");
 }
