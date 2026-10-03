@@ -28,7 +28,13 @@ import {
   type ProductInput,
   type ServiceInput,
 } from "@/lib/admin-data";
-import { replaceImageEverywhere, saveContentBlocks, saveSettings, type SettingKey } from "@/lib/cms";
+import {
+  replaceImageEverywhere,
+  saveContentBlocks,
+  saveNavRows,
+  saveSettings,
+  type SettingKey,
+} from "@/lib/cms";
 import { SETTING_KEYS } from "@/lib/cms";
 
 export type ActionState = { error: string | null; ok?: boolean };
@@ -251,6 +257,28 @@ export async function saveSettingsAction(_prev: ActionState, formData: FormData)
   revalidatePublic();
   revalidatePath("/admin/settings");
   if (!ok) return { error: "Impossible d'enregistrer les réglages (base indisponible)." };
+  return { error: null, ok: true };
+}
+
+export async function saveNavAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await guard();
+  const hrefs = formData.getAll("href").map(String);
+  const rows = hrefs.map((_, index) => ({
+    href: String(formData.getAll("href")[index] ?? ""),
+    labelAr: String(formData.getAll("labelAr")[index] ?? ""),
+    labelFr: String(formData.getAll("labelFr")[index] ?? ""),
+    parentHref: String(formData.getAll("parentHref")[index] ?? ""),
+    sort: Number(formData.getAll("sort")[index] ?? index) || index,
+    visible: String(formData.getAll("visible")[index] ?? "1") !== "0",
+  }));
+  const logoOk = await saveSettings({
+    logoUrl: str(formData, "logoUrl"),
+    logoText: str(formData, "logoText"),
+  });
+  const ok = await saveNavRows(rows);
+  revalidatePublic();
+  revalidatePath("/admin/menu");
+  if (!logoOk || !ok) return { error: "Impossible d'enregistrer le menu (base indisponible)." };
   return { error: null, ok: true };
 }
 

@@ -13,6 +13,7 @@ const links = [
   { href: "/admin/blog", label: "Blog", icon: "✍️" },
   { href: "/admin/media", label: "Images", icon: "🖼️" },
   { href: "/admin/content", label: "Textes des pages", icon: "📝" },
+  { href: "/admin/menu", label: "Menu & logo", icon: "🧭" },
   { href: "/admin/settings", label: "Réglages du site", icon: "⚙️" },
   { href: "/admin/messages", label: "Messages", icon: "✉️" },
   { href: "/admin/orders", label: "Commandes", icon: "🧾" },

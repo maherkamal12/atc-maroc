@@ -136,6 +136,16 @@ export const DDL_STATEMENTS: readonly string[] = [
     "updated_at" timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT "content_blocks_key_unique" UNIQUE("key")
   )`,
+
+  `CREATE TABLE IF NOT EXISTS "nav_items" (
+    "id" serial PRIMARY KEY NOT NULL,
+    "href" varchar(240) NOT NULL,
+    "label_ar" text NOT NULL,
+    "label_fr" text NOT NULL,
+    "parent_href" varchar(240) DEFAULT '' NOT NULL,
+    "sort" integer DEFAULT 0 NOT NULL,
+    "visible" boolean DEFAULT true NOT NULL
+  )`,
 ];
 
 /** Idempotent column additions for databases created before this schema. */
@@ -156,4 +166,5 @@ export const EXPECTED_TABLES: readonly string[] = [
   "order_items",
   "site_settings",
   "content_blocks",
+  "nav_items",
 ];

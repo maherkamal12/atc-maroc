@@ -136,6 +136,18 @@ export type Product = typeof products.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type Order = typeof orders.$inferSelect;
+/** Public header main menu. Empty table → fallback to `navLinks` in site.ts. */
+export const navItems = pgTable("nav_items", {
+  id: serial("id").primaryKey(),
+  href: varchar("href", { length: 240 }).notNull(),
+  labelAr: text("label_ar").notNull(),
+  labelFr: text("label_fr").notNull(),
+  parentHref: varchar("parent_href", { length: 240 }).notNull().default(""),
+  sort: integer("sort").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
+});
+
 export type OrderItem = typeof orderItems.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type NavItem = typeof navItems.$inferSelect;

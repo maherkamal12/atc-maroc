@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
-import { contentBlocks, siteSettings } from "@/db/schema";
+import { contentBlocks, navItems, siteSettings, type NavItem } from "@/db/schema";
 import { ensureSeeded } from "@/db/seed";
 import { dict } from "@/lib/i18n";
-import { site, type Locale } from "@/lib/site";
+import { navLinks, site, type Locale, type NavLink } from "@/lib/site";
 import { heroImages } from "@/db/seed-data";
 
 export const SETTING_KEYS = [
@@ -29,6 +29,8 @@ export const SETTING_KEYS = [
   "heroSolar",
   "heroElectrical",
   "heroInterior",
+  "logoUrl",
+  "logoText",
 ] as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[number];
@@ -56,6 +58,8 @@ export type ResolvedSite = {
   heroSolar: string;
   heroElectrical: string;
   heroInterior: string;
+  logoUrl: string;
+  logoText: string;
 };
 
 const defaultHoursAr = site.hours.map((h) => h.ar).join("\n");
@@ -86,6 +90,8 @@ export const defaultSite: ResolvedSite = {
   heroSolar: heroImages.solar,
   heroElectrical: heroImages.electrical,
   heroInterior: heroImages.interior,
+  logoUrl: "",
+  logoText: site.shortName,
 };
 
 export const CONTENT_KEYS = [
@@ -246,6 +252,103 @@ export async function replaceImageEverywhere(from: string, to: string): Promise<
     return true;
   } catch (error) {
     markDatabaseUnavailable("replaceImageEverywhere", error);
+    return false;
+  }
+}
+
+export type MenuRow = {
+  id: number;
+  href: string;
+  labelAr: string;
+  labelFr: string;
+  parentHref: string;
+  sort: number;
+  visible: boolean;
+};
+
+function flattenNav(links: NavLink[], parentHref = "", start = 0): MenuRow[] {
+  const rows: MenuRow[] = [];
+  links.forEach((link, index) => {
+    rows.push({
+      id: 0,
+      href: link.href,
+      labelAr: link.labelAr,
+      labelFr: link.labelFr,
+      parentHref,
+      sort: start + index,
+      visible: true,
+    });
+    if (link.children?.length) {
+      rows.push(...flattenNav(link.children, link.href, (start + index) * 10));
+    }
+  });
+  return rows;
+}
+
+export function defaultMenuRows(): MenuRow[] {
+  return flattenNav(navLinks);
+}
+
+export async function listNavRows(): Promise<MenuRow[]> {
+  await ensureSeeded();
+  if (!canQueryDatabase()) return defaultMenuRows();
+  try {
+    const rows = await db.select().from(navItems).orderBy(asc(navItems.sort), asc(navItems.id));
+    if (!rows.length) return defaultMenuRows();
+    return rows.map((row: NavItem) => ({
+      id: row.id,
+      href: row.href,
+      labelAr: row.labelAr,
+      labelFr: row.labelFr,
+      parentHref: row.parentHref,
+      sort: row.sort,
+      visible: row.visible,
+    }));
+  } catch (error) {
+    markDatabaseUnavailable("listNavRows", error);
+    return defaultMenuRows();
+  }
+}
+
+export async function getHeaderNav(locale: Locale) {
+  const rows = (await listNavRows()).filter((row) => row.visible);
+  const tops = rows.filter((row) => !row.parentHref);
+  return tops.map((row) => {
+    const children = rows
+      .filter((child) => child.parentHref === row.href)
+      .map((child) => ({
+        href: child.href,
+        label: locale === "fr" ? child.labelFr : child.labelAr,
+      }));
+    return {
+      href: row.href,
+      label: locale === "fr" ? row.labelFr : row.labelAr,
+      children: children.length ? children : undefined,
+    };
+  });
+}
+
+export async function saveNavRows(rows: Omit<MenuRow, "id">[]): Promise<boolean> {
+  await ensureSeeded();
+  if (!canQueryDatabase()) return false;
+  try {
+    await db.delete(navItems);
+    const clean = rows.filter((row) => row.href.trim() && (row.labelAr.trim() || row.labelFr.trim()));
+    if (clean.length) {
+      await db.insert(navItems).values(
+        clean.map((row, index) => ({
+          href: row.href.trim(),
+          labelAr: row.labelAr.trim(),
+          labelFr: row.labelFr.trim(),
+          parentHref: row.parentHref.trim(),
+          sort: Number.isFinite(row.sort) ? row.sort : index,
+          visible: row.visible,
+        })),
+      );
+    }
+    return true;
+  } catch (error) {
+    markDatabaseUnavailable("saveNavRows", error);
     return false;
   }
 }

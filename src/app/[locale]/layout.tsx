@@ -2,13 +2,13 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { QuoteProvider } from "@/components/cart-provider";
-import { SiteHeader, type HeaderNavItem } from "@/components/site-header";
+import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FloatingWidgets } from "@/components/floating-widgets";
 import { getCategories, getServices } from "@/lib/data";
 import { t } from "@/lib/i18n";
-import { getBlock, getResolvedSite } from "@/lib/cms";
-import { isLocale, navLinks, type Locale } from "@/lib/site";
+import { getBlock, getHeaderNav, getResolvedSite } from "@/lib/cms";
+import { isLocale, type Locale } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -42,21 +42,13 @@ export default async function LocaleLayout({
   const locale: Locale = rawLocale;
   const tr = t(locale);
 
-  const [services, categories, contact, footerAbout] = await Promise.all([
+  const [services, categories, contact, footerAbout, items] = await Promise.all([
     getServices(),
     getCategories(),
     getResolvedSite(),
     getBlock("footer.about", locale),
+    getHeaderNav(locale),
   ]);
-
-  const items: HeaderNavItem[] = navLinks.map((link) => ({
-    href: link.href,
-    label: locale === "fr" ? link.labelFr : link.labelAr,
-    children: link.children?.map((child) => ({
-      href: child.href,
-      label: locale === "fr" ? child.labelFr : child.labelAr,
-    })),
-  }));
 
   return (
     <QuoteProvider>

@@ -29,6 +29,8 @@ const labels: Record<(typeof SETTING_KEYS)[number], string> = {
   heroSolar: "Image hero solaire",
   heroElectrical: "Image hero électricité",
   heroInterior: "Image hero intérieur",
+  logoUrl: "Logo (URL) — laissez vide pour le monogramme",
+  logoText: "Texte du monogramme (si pas d'image)",
 };
 
 export default async function SettingsPage() {
