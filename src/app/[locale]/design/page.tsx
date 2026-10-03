@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHero, SectionHeading } from "@/components/ui";
 import { getPosts, postTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
+import { getBlock } from "@/lib/cms";
 import { isLocale, site, type Locale } from "@/lib/site";
 import { heroImages } from "@/db/seed-data";
 
@@ -14,10 +15,25 @@ export default async function DesignPage({ params }: { params: Promise<{ locale:
   const locale: Locale = raw;
   const tr = t(locale);
 
+  const [heroTitle, heroSub, heroImg, t1, x1, i1, t2, x2, i2, t3, x3, i3] = await Promise.all([
+    getBlock("design.heroTitle", locale),
+    getBlock("design.heroSub", locale),
+    getBlock("design.hero.image", locale),
+    getBlock("design.block1.title", locale),
+    getBlock("design.block1.text", locale),
+    getBlock("design.block1.image", locale),
+    getBlock("design.block2.title", locale),
+    getBlock("design.block2.text", locale),
+    getBlock("design.block2.image", locale),
+    getBlock("design.block3.title", locale),
+    getBlock("design.block3.text", locale),
+    getBlock("design.block3.image", locale),
+  ]);
+
   const gallery = [
-    { image: heroImages.interior, title: tr.designTitle1, text: tr.designText1 },
-    { image: heroImages.solar, title: tr.designTitle3, text: tr.designText3 },
-    { image: heroImages.electrical, title: tr.designTitle2, text: tr.designText2 },
+    { image: i1 || heroImages.interior, title: t1, text: x1 },
+    { image: i2 || heroImages.solar, title: t2, text: x2 },
+    { image: i3 || heroImages.electrical, title: t3, text: x3 },
   ];
 
   const posts = await getPosts(3);
@@ -25,14 +41,10 @@ export default async function DesignPage({ params }: { params: Promise<{ locale:
   return (
     <>
       <PageHero
-        title={tr.designSection}
-        subtitle={
-          locale === "fr"
-            ? "Design intérieur, décoration et aménagement : de l'idée à la réalisation."
-            : "تصميم داخلي، ديكور وتجهيز: من الفكرة إلى التنفيذ."
-        }
-        breadcrumbs={[{ href: `/${locale}`, label: tr.breadcrumbHome }, { label: tr.designSection }]}
-        image={heroImages.interior}
+        title={heroTitle}
+        subtitle={heroSub}
+        breadcrumbs={[{ href: `/${locale}`, label: tr.breadcrumbHome }, { label: heroTitle }]}
+        image={heroImg || heroImages.interior}
       />
 
       <section className="section">

@@ -35,7 +35,8 @@ import {
   saveSettings,
   type SettingKey,
 } from "@/lib/cms";
-import { SETTING_KEYS } from "@/lib/cms";
+import { CONTENT_KEYS, SETTING_KEYS } from "@/lib/cms";
+import { deleteCustomPage, parseSections, saveCustomPage } from "@/lib/pages";
 
 export type ActionState = { error: string | null; ok?: boolean };
 
@@ -285,16 +286,54 @@ export async function saveNavAction(_prev: ActionState, formData: FormData): Pro
 export async function saveContentAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await guard();
   const keys = formData.getAll("key").map(String);
-  const entries = keys.map((key, index) => ({
-    key,
-    valueAr: String(formData.getAll("valueAr")[index] ?? ""),
-    valueFr: String(formData.getAll("valueFr")[index] ?? ""),
-  }));
+  const entries = keys.map((key, index) => {
+    let valueAr = String(formData.getAll("valueAr")[index] ?? "");
+    let valueFr = String(formData.getAll("valueFr")[index] ?? "");
+    const meta = CONTENT_KEYS.find((item) => item.key === key);
+    if (meta?.kind === "image") {
+      const url = valueFr.trim() || valueAr.trim();
+      valueAr = url;
+      valueFr = url;
+    }
+    return { key, valueAr, valueFr };
+  });
   const ok = await saveContentBlocks(entries);
   revalidatePublic();
   revalidatePath("/admin/content");
   if (!ok) return { error: "Impossible d'enregistrer les textes (base indisponible)." };
   return { error: null, ok: true };
+}
+
+export async function savePageAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await guard();
+  const id = num(formData, "id");
+  const sections = parseSections(str(formData, "sections"));
+  const result = await saveCustomPage(id || null, {
+    slug: str(formData, "slug"),
+    titleAr: str(formData, "titleAr"),
+    titleFr: str(formData, "titleFr"),
+    subtitleAr: str(formData, "subtitleAr"),
+    subtitleFr: str(formData, "subtitleFr"),
+    heroImage: str(formData, "heroImage"),
+    sections,
+    published: bool(formData, "published"),
+    sort: num(formData, "sort"),
+  });
+  revalidatePublic();
+  revalidatePath("/admin/pages");
+  if (!result.ok) return { error: result.error };
+  revalidatePath(`/ar/p/${result.slug}`);
+  revalidatePath(`/fr/p/${result.slug}`);
+  if (!id) redirect(`/admin/pages`);
+  return { error: null, ok: true };
+}
+
+export async function deletePageAction(formData: FormData) {
+  await guard();
+  const ok = await deleteCustomPage(num(formData, "id"));
+  revalidatePublic();
+  revalidatePath("/admin/pages");
+  if (!ok) redirect("/admin/pages?db=error");
 }
 
 export async function replaceMediaAction(_prev: ActionState, formData: FormData): Promise<ActionState> {

@@ -27,7 +27,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale: Locale = raw;
   const tr = t(locale);
 
-  const [services, featured, posts, info, heroTitle1, heroSub1, heroTitle2, heroSub2, heroTitle3, heroSub3] =
+  const [services, featured, posts, info, heroTitle1, heroSub1, heroTitle2, heroSub2, heroTitle3, heroSub3, img1, img2, img3] =
     await Promise.all([
       getServices(),
       getProducts({ featured: true, limit: 8 }),
@@ -39,11 +39,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       getBlock("home.heroSub2", locale),
       getBlock("home.heroTitle3", locale),
       getBlock("home.heroSub3", locale),
+      getBlock("home.hero1.image", locale),
+      getBlock("home.hero2.image", locale),
+      getBlock("home.hero3.image", locale),
     ]);
 
   const slides = [
     {
-      image: info.heroSolar,
+      image: img2 || info.heroSolar,
       title: heroTitle2,
       subtitle: heroSub2,
       ctaLabel: tr.shopNow,
@@ -52,7 +55,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       secondaryHref: `/${locale}/services`,
     },
     {
-      image: info.heroElectrical,
+      image: img1 || info.heroElectrical,
       title: heroTitle1,
       subtitle: heroSub1,
       ctaLabel: tr.ctaButton,
@@ -61,7 +64,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       secondaryHref: `/${locale}/about`,
     },
     {
-      image: info.heroInterior,
+      image: img3 || info.heroInterior,
       title: heroTitle3,
       subtitle: heroSub3,
       ctaLabel: locale === "fr" ? "Design et décoration" : "التصميم والتزيين",

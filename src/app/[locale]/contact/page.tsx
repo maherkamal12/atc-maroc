@@ -14,6 +14,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const tr = t(locale);
   const site = await getResolvedSite();
   const lead = await getBlock("contact.lead", locale);
+  const contactHero = await getBlock("contact.hero.image", locale);
   const hours = (locale === "fr" ? site.hoursFr : site.hoursAr).split("\n").filter(Boolean);
 
   const cards = [
@@ -49,7 +50,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
         title={tr.contactTitle}
         subtitle={lead}
         breadcrumbs={[{ href: `/${locale}`, label: tr.breadcrumbHome }, { label: tr.contactTitle }]}
-        image={site.heroSolar}
+        image={contactHero || site.heroSolar}
       />
 
       <section className="section">

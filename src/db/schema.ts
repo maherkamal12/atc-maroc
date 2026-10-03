@@ -147,7 +147,24 @@ export const navItems = pgTable("nav_items", {
   visible: boolean("visible").notNull().default(true),
 });
 
+/** Custom marketing pages created in /admin/pages (same layout as Design / À propos). */
+export const customPages = pgTable("custom_pages", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 160 }).notNull().unique(),
+  titleAr: text("title_ar").notNull(),
+  titleFr: text("title_fr").notNull(),
+  subtitleAr: text("subtitle_ar").notNull().default(""),
+  subtitleFr: text("subtitle_fr").notNull().default(""),
+  heroImage: text("hero_image").notNull().default(""),
+  /** JSON array of PageSection */
+  sections: text("sections").notNull().default("[]"),
+  published: boolean("published").notNull().default(true),
+  sort: integer("sort").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type OrderItem = typeof orderItems.$inferSelect;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type ContentBlock = typeof contentBlocks.$inferSelect;
 export type NavItem = typeof navItems.$inferSelect;
+export type CustomPage = typeof customPages.$inferSelect;

@@ -19,6 +19,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const vision = await getBlock("about.vision", locale);
   const goals = await getBlock("about.goals", locale);
   const intro = await getBlock("about.intro", locale);
+  const aboutHero = await getBlock("about.hero.image", locale);
   const hours = (locale === "fr" ? site.hoursFr : site.hoursAr).split("\n").filter(Boolean);
 
   const blocks = [
@@ -53,7 +54,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           { href: `/${locale}`, label: tr.breadcrumbHome },
           { label: locale === "fr" ? "À propos de nous" : "من نحن" },
         ]}
-        image={site.heroElectrical}
+        image={aboutHero || site.heroElectrical}
       />
 
       <section className="section">
