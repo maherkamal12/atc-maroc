@@ -344,6 +344,22 @@ export async function createMessage(input: {
 }): Promise<ContactMessage | null> {
   await ensureSeeded();
   if (!canQueryDatabase()) return null;
+  try {
+    return await insertMessage(input);
+  } catch (error) {
+    markDatabaseUnavailable("createMessage", error);
+    return null;
+  }
+}
+
+async function insertMessage(input: {
+  name: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  message?: string;
+  locale?: string;
+}): Promise<ContactMessage | null> {
   const [row] = await db
     .insert(contactMessages)
     .values({
@@ -359,6 +375,7 @@ export async function createMessage(input: {
 }
 
 export async function listMessages(): Promise<ContactMessage[]> {
+  await ensureSeeded();
   if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt)).limit(200);
@@ -383,6 +400,15 @@ export type NewOrderInput = {
 export async function createOrder(input: NewOrderInput) {
   await ensureSeeded();
   if (!canQueryDatabase()) return null;
+  try {
+    return await insertOrder(input);
+  } catch (error) {
+    markDatabaseUnavailable("createOrder", error);
+    return null;
+  }
+}
+
+async function insertOrder(input: NewOrderInput) {
   const all = await getProducts();
   const resolved = input.items
     .map((item) => {
@@ -430,6 +456,7 @@ export async function createOrder(input: NewOrderInput) {
 }
 
 export async function listOrders(): Promise<Order[]> {
+  await ensureSeeded();
   if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(200);
@@ -440,6 +467,7 @@ export async function listOrders(): Promise<Order[]> {
 }
 
 export async function listAllOrderItems(): Promise<OrderItem[]> {
+  await ensureSeeded();
   if (!canQueryDatabase()) return [];
   try {
     return await db.select().from(orderItems).limit(1000);
@@ -449,15 +477,34 @@ export async function listAllOrderItems(): Promise<OrderItem[]> {
   }
 }
 
-export async function updateOrderStatus(id: number, status: string) {
-  await db.update(orders).set({ status }).where(eq(orders.id, id));
+/** Returns false when the change could not be stored (no database / error). */
+export async function updateOrderStatus(id: number, status: string): Promise<boolean> {
+  await ensureSeeded();
+  if (!canQueryDatabase()) return false;
+  try {
+    await db.update(orders).set({ status }).where(eq(orders.id, id));
+    return true;
+  } catch (error) {
+    markDatabaseUnavailable("updateOrderStatus", error);
+    return false;
+  }
 }
 
-export async function markMessageRead(id: number, isRead: boolean) {
-  await db.update(contactMessages).set({ isRead }).where(eq(contactMessages.id, id));
+/** Returns false when the change could not be stored (no database / error). */
+export async function markMessageRead(id: number, isRead: boolean): Promise<boolean> {
+  await ensureSeeded();
+  if (!canQueryDatabase()) return false;
+  try {
+    await db.update(contactMessages).set({ isRead }).where(eq(contactMessages.id, id));
+    return true;
+  } catch (error) {
+    markDatabaseUnavailable("markMessageRead", error);
+    return false;
+  }
 }
 
 export async function dashboardStats() {
+  await ensureSeeded();
   if (!canQueryDatabase()) {
     return {
       messages: 0,

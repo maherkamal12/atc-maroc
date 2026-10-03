@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
+import { ensureSchema } from "@/db/migrate";
 import { categories, posts, products, services } from "@/db/schema";
 import { postSeed, serviceSeed } from "./seed-data";
 import { generatedCategories, generatedProducts } from "./products.generated";
@@ -23,6 +24,16 @@ async function tableCount(table: typeof services | typeof categories | typeof pr
 }
 
 async function seedNow() {
+  // A fresh database (new Neon project, new branch, ...) has no tables at all:
+  // create them first so the very first request can fill the catalog.
+  const schema = await ensureSchema();
+  if (!schema.ready) {
+    console.warn(
+      `[db] seeding skipped, tables missing: ${schema.missing.join(", ")} — run \`npm run db:push\``,
+    );
+    return;
+  }
+
   const [serviceCount, categoryCount, productCount, postCount] = await Promise.all([
     tableCount(services),
     tableCount(categories),

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { isAdmin, login, logout } from "./actions";
+import { isAdmin, logout, usingDefaultAdminPassword } from "./actions";
+import { LoginForm } from "./login-form";
 
 export const dynamic = "force-dynamic";
 
@@ -16,35 +17,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!authed) {
     return (
       <div className="grid min-h-screen place-items-center bg-brand-950 px-4">
-        <form
-          action={login}
-          className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-2xl"
-        >
-          <div className="mb-6 text-center">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-brand-950 text-sm font-black text-white">
-              ATC
-            </span>
-            <h1 className="mt-4 text-lg font-extrabold text-brand-950">Espace administrateur</h1>
-            <p className="mt-1 text-xs text-slate-500">ATLAS TECH CONCEPT — back office</p>
-          </div>
-          <label className="mb-1.5 block text-sm font-bold text-brand-950" htmlFor="password">
-            Mot de passe
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            className="field"
-            placeholder="••••••••"
-            required
-          />
-          <button type="submit" className="btn btn-primary mt-5 w-full">
-            Se connecter
-          </button>
-          <p className="mt-4 text-center text-[11px] text-slate-400">
-            Mot de passe par défaut : atc2026 (variable ADMIN_PASSWORD)
-          </p>
-        </form>
+        <LoginForm
+          showDefaultHint={
+            process.env.NODE_ENV !== "production" && (await usingDefaultAdminPassword())
+          }
+        />
       </div>
     );
   }

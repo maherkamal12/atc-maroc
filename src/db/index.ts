@@ -6,15 +6,39 @@ export type Database = NodePgDatabase<Record<string, never>>;
 /** How long a broken/unreachable database is skipped before we try it again. */
 const DEGRADED_TTL_MS = 30_000;
 
+/**
+ * Neon suspends an idle compute (free plan: after ~5 minutes) and closes its
+ * connections. A cold database needs a couple of seconds to wake up, so the
+ * connect timeout is generous — but never unbounded, otherwise a wrong host
+ * would hang page renders.
+ */
+const CONNECT_TIMEOUT_MS = 10_000;
+const IDLE_TIMEOUT_MS = 30_000;
+
 const globalForDb = globalThis as typeof globalThis & {
   __arenaNextJsPostgresqlPool?: Pool;
   __arenaNextJsPostgresqlDb?: Database;
   __arenaNextJsPostgresqlDegradedUntil?: number;
 };
 
+/**
+ * Connection string, accepting the variable names used by the hosting
+ * integrations: `DATABASE_URL` (Neon, Vercel + Neon, Supabase…), `POSTGRES_URL`
+ * and `POSTGRES_PRISMA_URL` (older Vercel Postgres / Neon integrations).
+ * Whichever one your project has, the app finds it.
+ */
+export function databaseUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    undefined
+  );
+}
+
 /** True when a Postgres connection string is configured. */
 export function isDatabaseConfigured(): boolean {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(databaseUrl());
 }
 
 function degradedUntil(): number {
@@ -41,23 +65,72 @@ export function canQueryDatabase(): boolean {
   return isDatabaseConfigured() && Date.now() >= degradedUntil();
 }
 
-function initDb(): Database {
-  const databaseUrl = process.env.DATABASE_URL;
+/**
+ * `pg` throws (and can bring the process down) when an idle client hits an
+ * error and nobody listens on the pool. Managed Postgres (Neon, Supabase, …)
+ * closes idle connections all the time, so this listener is mandatory.
+ */
+function attachPoolErrorHandler(pool: Pool) {
+  pool.on("error", (error) => {
+    console.error(`[db] idle client error (recovered): ${error.message}`);
+  });
+}
 
-  if (!databaseUrl) {
+/**
+ * Hosted Postgres requires TLS. When `sslmode` is missing from a Neon
+ * connection string the TLS handshake is skipped and the connection is
+ * rejected — so add it back for managed hosts (never for a local server).
+ */
+export function normalizeConnectionString(raw: string): string {
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.toLowerCase();
+    const isNeon = host === "neon.tech" || host.endsWith(".neon.tech");
+    if (isNeon && !url.searchParams.has("sslmode")) {
+      url.searchParams.set("sslmode", "require");
+    }
+    return url.toString();
+  } catch {
+    return raw;
+  }
+}
+
+/** Redacted `host/database` of the configured database, for logs and admin UI. */
+export function databaseTarget(): string | null {
+  const raw = databaseUrl();
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    return `${url.hostname}${url.pathname}`;
+  } catch {
+    return "configured";
+  }
+}
+
+function initDb(): Database {
+  const url = databaseUrl();
+
+  if (!url) {
     throw new Error("DATABASE_URL is required");
   }
 
-  const pool =
-    globalForDb.__arenaNextJsPostgresqlPool ??
-    new Pool({
-      connectionString: databaseUrl,
+  let pool = globalForDb.__arenaNextJsPostgresqlPool;
+  if (!pool) {
+    pool = new Pool({
+      connectionString: normalizeConnectionString(url),
+      application_name: "atc-maroc",
       // Never let a slow or unreachable database hang a page render: the data
       // layer falls back to the bundled catalog as soon as this fails.
-      connectionTimeoutMillis: 3_000,
-      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: CONNECT_TIMEOUT_MS,
+      idleTimeoutMillis: IDLE_TIMEOUT_MS,
+      keepAlive: true,
       max: 5,
     });
+    // Attached at creation time only: `initDb()` runs again on every request in
+    // development, and piling up listeners on the same pool triggers
+    // "MaxListenersExceededWarning" and leaks memory.
+    attachPoolErrorHandler(pool);
+  }
   const database = globalForDb.__arenaNextJsPostgresqlDb ?? drizzle(pool);
 
   globalForDb.__arenaNextJsPostgresqlPool = pool;

@@ -11,8 +11,27 @@ const statuses = [
   { value: "cancelled", label: "Annulée" },
 ];
 
-export default async function AdminOrdersPage() {
-  const [orders, items] = await Promise.all([listOrders(), listAllOrderItems()]);
+
+function DatabaseErrorBanner({ failed }: { failed: boolean }) {
+  if (!failed) return null;
+  return (
+    <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      La base de données n&apos;a pas répondu : la modification n&apos;a pas été enregistrée. Vérifiez
+      la connexion (tableau de bord → Base de données).
+    </p>
+  );
+}
+
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ db?: string }>;
+}) {
+  const [{ db }, orders, items] = await Promise.all([
+    searchParams,
+    listOrders(),
+    listAllOrderItems(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -20,6 +39,8 @@ export default async function AdminOrdersPage() {
         <h1 className="text-2xl font-extrabold text-brand-950">Commandes</h1>
         <p className="text-sm text-slate-500">{orders.length} commande(s) enregistrée(s).</p>
       </header>
+
+      <DatabaseErrorBanner failed={db === "error"} />
 
       {orders.length ? (
         <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">
