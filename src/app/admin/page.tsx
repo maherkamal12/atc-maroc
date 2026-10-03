@@ -50,7 +50,7 @@ export default async function AdminDashboard() {
   const cards = [
     { label: "Messages", value: stats.messages, hint: `${stats.unread} non lus`, href: "/admin/messages" },
     { label: "Commandes", value: stats.orders, hint: "toutes status", href: "/admin/orders" },
-    { label: "Produits", value: stats.products, hint: "catalogue importé", href: "/ar/products" },
+    { label: "Produits", value: stats.products, hint: "catalogue importé", href: "/admin/products" },
     { label: "Articles devis", value: stats.orderItems, hint: "lignes de devis", href: "/admin/orders" },
   ];
 

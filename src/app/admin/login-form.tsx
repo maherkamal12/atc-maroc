@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { login, type LoginState } from "./actions";
 
@@ -15,8 +15,15 @@ function SubmitButton() {
   );
 }
 
-export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
+export function LoginForm({
+  showDefaultHint,
+  productionWarning,
+}: {
+  showDefaultHint: boolean;
+  productionWarning?: boolean;
+}) {
   const [state, formAction] = useActionState(login, initialState);
+  const [visible, setVisible] = useState(false);
 
   return (
     <form action={formAction} className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-2xl">
@@ -28,18 +35,36 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
         <p className="mt-1 text-xs text-slate-500">ATLAS TECH CONCEPT — back office</p>
       </div>
 
+      {productionWarning ? (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+          Mot de passe par défaut utilisé en production. Définissez ADMIN_PASSWORD.
+        </p>
+      ) : null}
+
       <label className="mb-1.5 block text-sm font-bold text-brand-950" htmlFor="password">
         Mot de passe
       </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        className="field"
-        placeholder="••••••••"
-        autoComplete="current-password"
-        required
-      />
+      <div className="relative">
+        <input
+          id="password"
+          name="password"
+          type={visible ? "text" : "password"}
+          className="field pe-12"
+          placeholder="••••••••"
+          autoComplete="current-password"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          required
+        />
+        <button
+          type="button"
+          className="absolute inset-y-0 end-0 px-3 text-xs font-bold text-slate-500"
+          onClick={() => setVisible((v) => !v)}
+        >
+          {visible ? "Masquer" : "Voir"}
+        </button>
+      </div>
 
       {state.error ? (
         <p

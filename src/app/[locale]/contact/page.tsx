@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { ContactForm } from "@/components/contact-form";
 import { PageHero } from "@/components/ui";
 import { t } from "@/lib/i18n";
-import { isLocale, site, type Locale } from "@/lib/site";
-import { heroImages } from "@/db/seed-data";
+import { getBlock, getResolvedSite } from "@/lib/cms";
+import { isLocale, type Locale } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +12,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   if (!isLocale(raw)) notFound();
   const locale: Locale = raw;
   const tr = t(locale);
+  const site = await getResolvedSite();
+  const lead = await getBlock("contact.lead", locale);
+  const hours = (locale === "fr" ? site.hoursFr : site.hoursAr).split("\n").filter(Boolean);
 
   const cards = [
     {
@@ -44,9 +47,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
     <>
       <PageHero
         title={tr.contactTitle}
-        subtitle={tr.contactLead}
+        subtitle={lead}
         breadcrumbs={[{ href: `/${locale}`, label: tr.breadcrumbHome }, { label: tr.contactTitle }]}
-        image={heroImages.solar}
+        image={site.heroSolar}
       />
 
       <section className="section">
@@ -97,8 +100,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                     <span>
                       <span className="block font-bold text-accent-400">{tr.workingHours}</span>
                       <ul className="space-y-1 text-white/80">
-                        {site.hours.map((entry) => (
-                          <li key={entry.fr}>{locale === "fr" ? entry.fr : entry.ar}</li>
+                        {hours.map((line) => (
+                          <li key={line}>{line}</li>
                         ))}
                       </ul>
                     </span>

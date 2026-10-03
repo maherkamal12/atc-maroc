@@ -10,7 +10,9 @@ const COOKIE = "atc_admin";
 const DEFAULT_ADMIN_PASSWORD = "atc2026";
 
 function adminPassword() {
-  return process.env.ADMIN_PASSWORD ?? DEFAULT_ADMIN_PASSWORD;
+  const raw = process.env.ADMIN_PASSWORD;
+  if (!raw || !raw.trim()) return DEFAULT_ADMIN_PASSWORD;
+  return raw;
 }
 
 /** True while the password is still the documented default (dev hint only). */
@@ -78,7 +80,7 @@ export async function login(_previous: LoginState, formData: FormData): Promise<
     return { error: "Trop de tentatives. Patientez quelques minutes avant de réessayer." };
   }
 
-  const password = String(formData.get("password") ?? "");
+  const password = String(formData.get("password") ?? "").trim();
   if (!passwordMatches(password)) {
     recordFailure(key);
     // Slow down automated guessing a little.

@@ -7,20 +7,27 @@ export const dynamic = "force-dynamic";
 
 const links = [
   { href: "/admin", label: "Tableau de bord", icon: "📊" },
+  { href: "/admin/products", label: "Produits", icon: "📦" },
+  { href: "/admin/categories", label: "Catégories", icon: "🗂️" },
+  { href: "/admin/services", label: "Services", icon: "🛠️" },
+  { href: "/admin/blog", label: "Blog", icon: "✍️" },
+  { href: "/admin/media", label: "Images", icon: "🖼️" },
+  { href: "/admin/content", label: "Textes des pages", icon: "📝" },
+  { href: "/admin/settings", label: "Réglages du site", icon: "⚙️" },
   { href: "/admin/messages", label: "Messages", icon: "✉️" },
   { href: "/admin/orders", label: "Commandes", icon: "🧾" },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const authed = await isAdmin();
+  const usingDefault = await usingDefaultAdminPassword();
 
   if (!authed) {
     return (
       <div className="grid min-h-screen place-items-center bg-brand-950 px-4">
         <LoginForm
-          showDefaultHint={
-            process.env.NODE_ENV !== "production" && (await usingDefaultAdminPassword())
-          }
+          showDefaultHint={process.env.NODE_ENV !== "production" && usingDefault}
+          productionWarning={process.env.NODE_ENV === "production" && usingDefault}
         />
       </div>
     );
@@ -35,7 +42,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           </span>
           <span className="text-sm font-extrabold">ATC Admin</span>
         </Link>
-        <nav className="mt-8 space-y-1">
+        <nav className="mt-8 grid grid-cols-2 gap-1 lg:grid-cols-1">
           {links.map((link) => (
             <Link
               key={link.href}

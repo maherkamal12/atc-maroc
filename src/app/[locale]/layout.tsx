@@ -7,20 +7,18 @@ import { SiteFooter } from "@/components/site-footer";
 import { FloatingWidgets } from "@/components/floating-widgets";
 import { getCategories, getServices } from "@/lib/data";
 import { t } from "@/lib/i18n";
-import { isLocale, navLinks, site, type Locale } from "@/lib/site";
+import { getBlock, getResolvedSite } from "@/lib/cms";
+import { isLocale, navLinks, type Locale } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: raw } = await params;
   const isFr = raw === "fr";
+  const info = await getResolvedSite();
   return {
-    title: isFr
-      ? "ATLAS TECH CONCEPT | Solutions techniques intégrées pour le bâtiment"
-      : "أطلس تك كونسيبت | حلول تقنية متكاملة للمباني",
-    description: isFr
-      ? "Électricité, plomberie, chauffage central, climatisation, énergie solaire, aménagement intérieur et design à Tanger et partout au Maroc."
-      : "كهرباء، سباكة، تدفئة مركزية، تكييف وتهوية، طاقة شمسية، تجهيز داخلي وتصميم في طنجة وكل المغرب.",
+    title: isFr ? info.seoTitleFr : info.seoTitleAr,
+    description: isFr ? info.seoDescFr : info.seoDescAr,
     alternates: {
       languages: { ar: "/ar", fr: "/fr" },
     },
@@ -44,7 +42,12 @@ export default async function LocaleLayout({
   const locale: Locale = rawLocale;
   const tr = t(locale);
 
-  const [services, categories] = await Promise.all([getServices(), getCategories()]);
+  const [services, categories, contact, footerAbout] = await Promise.all([
+    getServices(),
+    getCategories(),
+    getResolvedSite(),
+    getBlock("footer.about", locale),
+  ]);
 
   const items: HeaderNavItem[] = navLinks.map((link) => ({
     href: link.href,
@@ -65,6 +68,7 @@ export default async function LocaleLayout({
       </a>
       <SiteHeader
         locale={locale}
+        contact={contact}
         items={items}
         labels={{
           home: tr.home,
@@ -77,9 +81,16 @@ export default async function LocaleLayout({
         }}
       />
       <main id="main">{children}</main>
-      <SiteFooter locale={locale} services={services} categories={categories} />
+      <SiteFooter
+        locale={locale}
+        services={services}
+        categories={categories}
+        contact={contact}
+        aboutText={footerAbout}
+      />
       <FloatingWidgets
         locale={locale}
+        whatsapp={contact.whatsapp}
         labels={{
           whatsapp: locale === "fr" ? "WhatsApp" : "واتساب",
           cookieText: tr.cookieText,
@@ -93,11 +104,11 @@ export default async function LocaleLayout({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
-            name: site.nameFr,
-            alternateName: site.nameAr,
-            description: locale === "fr" ? site.taglineFr : site.taglineAr,
-            email: site.email,
-            telephone: site.phone,
+            name: contact.nameFr,
+            alternateName: contact.nameAr,
+            description: locale === "fr" ? contact.taglineFr : contact.taglineAr,
+            email: contact.email,
+            telephone: contact.phone,
             address: {
               "@type": "PostalAddress",
               streetAddress: "Avenue Moulay Smaïl, Rés. Moulay Ismaïl N°22, 5ème étage N°19",

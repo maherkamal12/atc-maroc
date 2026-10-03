@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { PageHero, SectionHeading } from "@/components/ui";
 import { getServices, serviceShort, serviceTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
-import { isLocale, site, type Locale } from "@/lib/site";
-import { heroImages } from "@/db/seed-data";
+import { getBlock, getResolvedSite } from "@/lib/cms";
+import { isLocale, type Locale } from "@/lib/site";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -14,31 +14,28 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const locale: Locale = raw;
   const tr = t(locale);
   const services = await getServices();
+  const site = await getResolvedSite();
+  const mission = await getBlock("about.mission", locale);
+  const vision = await getBlock("about.vision", locale);
+  const goals = await getBlock("about.goals", locale);
+  const intro = await getBlock("about.intro", locale);
+  const hours = (locale === "fr" ? site.hoursFr : site.hoursAr).split("\n").filter(Boolean);
 
   const blocks = [
     {
       title: locale === "fr" ? "Notre mission" : "مهمتنا",
       icon: "🎯",
-      text:
-        locale === "fr"
-          ? "Notre mission chez ATLAS TECH CONCEPT est de fournir des solutions intégrées et innovantes dans le domaine de la construction, des équipements techniques et du design intérieur, en mettant l'accent sur la qualité et l'efficacité dans chaque projet. Nous nous engageons à répondre aux besoins de nos clients de manière professionnelle, à garantir une exécution selon les plus hauts standards de sécurité et de durabilité, et à proposer des services à la pointe de la technologie pour simplifier la vie et améliorer les environnements de travail et d'habitation."
-          : "مهمتنا في ATLAS TECH CONCEPT هي تقديم حلول متكاملة ومبتكرة في مجال البناء، التجهيزات التقنية، والتصميم الداخلي، مع التركيز على الجودة والكفاءة في كل مشروع نقوم به. نسعى دائمًا لتلبية احتياجات عملائنا بشكل احترافي، وضمان تنفيذ أعمالنا وفق أعلى معايير السلامة والاستدامة، مع تقديم خدمات متطورة تجمع بين الابتكار والتكنولوجيا لتسهيل الحياة وتحسين بيئات العمل والسكن.",
+      text: mission,
     },
     {
       title: locale === "fr" ? "Notre vision" : "رؤية الشركة",
       icon: "🔭",
-      text:
-        locale === "fr"
-          ? "La vision d'ATLAS TECH CONCEPT est de devenir le leader des solutions techniques et constructives intégrées au niveau de la région, grâce à l'innovation, la haute qualité et l'utilisation des technologies les plus récentes dans tous nos domaines d'activité. Nous cherchons à bâtir des relations durables avec nos clients, à assurer la durabilité de tous nos projets et à offrir des environnements de travail et de logement confortables et fonctionnels qui répondent aux attentes de nos clients."
-          : "رؤية ATLAS TECH CONCEPT هي أن نصبح الرائدين في تقديم الحلول التقنية والبنائية المتكاملة على مستوى المنطقة، من خلال الابتكار، الجودة العالية، واستخدام أحدث التقنيات في كافة مجالات عملنا. نسعى لبناء علاقات طويلة الأمد مع عملائنا، وتحقيق الاستدامة في جميع مشاريعنا، مع تقديم بيئات عمل وسكن مريحة وعملية تلبي توقعات العملاء وتفوقها.",
+      text: vision,
     },
     {
       title: locale === "fr" ? "Nos objectifs" : "أهدافنا",
       icon: "📈",
-      text:
-        locale === "fr"
-          ? "L'objectif d'ATLAS TECH CONCEPT est de fournir des solutions complètes dans les domaines de l'électricité, la plomberie, la climatisation, le chauffage central, l'énergie solaire et le design intérieur, afin que notre société devienne le partenaire de confiance de tous nos clients pour leurs projets résidentiels et commerciaux."
-          : "هدف ATLAS TECH CONCEPT هو تقديم حلول متكاملة وشاملة في مجالات الكهرباء، السباكة، التكييف، التدفئة المركزية، الطاقة الشمسية، والتصميم الداخلي، بحيث تصبح شركتنا الشريك الموثوق لجميع العملاء في مشاريعهم السكنية والتجارية.",
+      text: goals,
       bullets: tr.whyPoints,
     },
   ];
@@ -56,7 +53,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           { href: `/${locale}`, label: tr.breadcrumbHome },
           { label: locale === "fr" ? "À propos de nous" : "من نحن" },
         ]}
-        image={heroImages.electrical}
+        image={site.heroElectrical}
       />
 
       <section className="section">
@@ -68,11 +65,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               align="start"
             />
             <p className="text-[15px] leading-loose text-slate-700">{tr.footerAbout}</p>
-            <p className="mt-4 text-[15px] leading-loose text-slate-700">
-              {locale === "fr"
-                ? "Basée à Tanger, notre équipe intervient dans tout le Maroc pour les projets résidentiels, hôtellers, commerciaux et industriels. Chaque chantier est suivi par un responsable technique unique, garantissant coordination, qualité et respect des délais."
-                : "مقرنا بطنجة، ويتدخل فريقنا في كل المغرب لفائدة المشاريع السكنية والفندقية والتجارية والصناعية. كل ورش يتابعه مسؤول تقني واحد يضمن التنسيق والجودة واحترام المواعيد."}
-            </p>
+            <p className="mt-4 text-[15px] leading-loose text-slate-700">{intro}</p>
             <div className="mt-8 grid grid-cols-2 gap-4">
               {[
                 { value: "12+", label: tr.statsYears },
@@ -157,8 +150,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <ul className="space-y-2 text-sm text-white/80">
             <li>📍 {locale === "fr" ? site.addressFr : site.addressAr}</li>
             <li>✉️ {site.email}</li>
-            {site.hours.map((entry) => (
-              <li key={entry.fr}>🕒 {locale === "fr" ? entry.fr : entry.ar}</li>
+            {hours.map((entry) => (
+              <li key={entry}>🕒 {entry}</li>
             ))}
           </ul>
         </div>

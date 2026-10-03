@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { setOrderStatus } from "../actions";
 import { listAllOrderItems, listOrders } from "@/lib/data";
 
@@ -25,24 +26,43 @@ function DatabaseErrorBanner({ failed }: { failed: boolean }) {
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ db?: string }>;
+  searchParams: Promise<{ db?: string; q?: string; status?: string }>;
 }) {
-  const [{ db }, orders, items] = await Promise.all([
-    searchParams,
-    listOrders(),
-    listAllOrderItems(),
-  ]);
+  const sp = await searchParams;
+  const [orders, items] = await Promise.all([listOrders(), listAllOrderItems()]);
+  const q = (sp.q ?? "").toLowerCase();
+  const filtered = orders.filter((o) => {
+    if (sp.status && o.status !== sp.status) return false;
+    if (!q) return true;
+    return [o.reference, o.customerName, o.email, o.phone, o.city].join(" ").toLowerCase().includes(q);
+  });
+  const db = sp.db;
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-extrabold text-brand-950">Commandes</h1>
-        <p className="text-sm text-slate-500">{orders.length} commande(s) enregistrée(s).</p>
+        <p className="text-sm text-slate-500">{filtered.length} commande(s) — devis, jamais de prix.</p>
       </header>
+      <form className="flex flex-wrap gap-2" method="get">
+        <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="Recherche…" />
+        <select name="status" defaultValue={sp.status ?? ""} className="field max-w-xs">
+          <option value="">Tous statuts</option>
+          {statuses.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+        <button className="btn btn-primary">Filtrer</button>
+        <Link className="btn btn-outline" href="/admin/orders/export">
+          Export CSV
+        </Link>
+      </form>
 
       <DatabaseErrorBanner failed={db === "error"} />
 
-      {orders.length ? (
+      {filtered.length ? (
         <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">
           <table className="w-full min-w-[52rem] text-sm">
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
@@ -56,11 +76,13 @@ export default async function AdminOrdersPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {orders.map((order) => {
+              {filtered.map((order) => {
                 const orderProducts = items.filter((item) => item.orderId === order.id);
                 return (
                   <tr key={order.id}>
-                    <td className="px-4 py-3 font-extrabold text-brand-950">{order.reference}</td>
+                    <td className="px-4 py-3 font-extrabold text-brand-950">
+                      <Link href={`/admin/orders/${order.id}`}>{order.reference}</Link>
+                    </td>
                     <td className="px-4 py-3">
                       <span className="block font-bold text-brand-900">{order.customerName}</span>
                       <span className="block text-xs text-slate-500">{order.email}</span>

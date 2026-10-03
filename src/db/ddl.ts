@@ -75,6 +75,7 @@ export const DDL_STATEMENTS: readonly string[] = [
     "tag_fr" varchar(80) DEFAULT '' NOT NULL,
     "read_minutes" integer DEFAULT 4 NOT NULL,
     "published_at" timestamp with time zone DEFAULT now() NOT NULL,
+    "published" boolean DEFAULT true NOT NULL,
     CONSTRAINT "posts_slug_unique" UNIQUE("slug")
   )`,
 
@@ -87,6 +88,7 @@ export const DDL_STATEMENTS: readonly string[] = [
     "message" text DEFAULT '' NOT NULL,
     "locale" varchar(5) DEFAULT 'ar' NOT NULL,
     "is_read" boolean DEFAULT false NOT NULL,
+    "archived" boolean DEFAULT false NOT NULL,
     "created_at" timestamp with time zone DEFAULT now() NOT NULL
   )`,
 
@@ -102,6 +104,7 @@ export const DDL_STATEMENTS: readonly string[] = [
     "items_count" integer DEFAULT 0 NOT NULL,
     "status" varchar(24) DEFAULT 'new' NOT NULL,
     "locale" varchar(5) DEFAULT 'ar' NOT NULL,
+    "archived" boolean DEFAULT false NOT NULL,
     "created_at" timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT "orders_reference_unique" UNIQUE("reference")
   )`,
@@ -117,6 +120,29 @@ export const DDL_STATEMENTS: readonly string[] = [
     CONSTRAINT "order_items_order_id_orders_id_fk" FOREIGN KEY ("order_id")
       REFERENCES "orders"("id") ON DELETE cascade
   )`,
+
+  `CREATE TABLE IF NOT EXISTS "site_settings" (
+    "id" serial PRIMARY KEY NOT NULL,
+    "key" varchar(120) NOT NULL,
+    "value" text DEFAULT '' NOT NULL,
+    CONSTRAINT "site_settings_key_unique" UNIQUE("key")
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS "content_blocks" (
+    "id" serial PRIMARY KEY NOT NULL,
+    "key" varchar(160) NOT NULL,
+    "value_ar" text DEFAULT '' NOT NULL,
+    "value_fr" text DEFAULT '' NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT "content_blocks_key_unique" UNIQUE("key")
+  )`,
+];
+
+/** Idempotent column additions for databases created before this schema. */
+export const DDL_ALTER_STATEMENTS: readonly string[] = [
+  `ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "published" boolean DEFAULT true NOT NULL`,
+  `ALTER TABLE "contact_messages" ADD COLUMN IF NOT EXISTS "archived" boolean DEFAULT false NOT NULL`,
+  `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "archived" boolean DEFAULT false NOT NULL`,
 ];
 
 /** Tables the application expects to find, in creation order. */
@@ -128,4 +154,6 @@ export const EXPECTED_TABLES: readonly string[] = [
   "contact_messages",
   "orders",
   "order_items",
+  "site_settings",
+  "content_blocks",
 ];

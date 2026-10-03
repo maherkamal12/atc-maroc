@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuote } from "./cart-provider";
 import type { Locale } from "@/lib/site";
-import { otherLocale, site } from "@/lib/site";
+import { otherLocale } from "@/lib/site";
+import type { ResolvedSite } from "@/lib/cms";
 
 export type HeaderNavItem = {
   href: string;
@@ -15,6 +16,7 @@ export type HeaderNavItem = {
 
 type Props = {
   locale: Locale;
+  contact: ResolvedSite;
   items: HeaderNavItem[];
   labels: {
     home: string;
@@ -27,7 +29,8 @@ type Props = {
   };
 };
 
-export function SiteHeader({ locale, items, labels }: Props) {
+export function SiteHeader({ locale, contact, items, labels }: Props) {
+  const site = contact;
   const pathname = usePathname() || `/${locale}`;
   const router = useRouter();
   const { count } = useQuote();

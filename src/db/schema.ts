@@ -69,6 +69,7 @@ export const posts = pgTable("posts", {
   tagFr: varchar("tag_fr", { length: 80 }).notNull().default(""),
   readMinutes: integer("read_minutes").notNull().default(4),
   publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+  published: boolean("published").notNull().default(true),
 });
 
 export const contactMessages = pgTable("contact_messages", {
@@ -80,6 +81,7 @@ export const contactMessages = pgTable("contact_messages", {
   message: text("message").notNull().default(""),
   locale: varchar("locale", { length: 5 }).notNull().default("ar"),
   isRead: boolean("is_read").notNull().default(false),
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -96,6 +98,7 @@ export const orders = pgTable("orders", {
   itemsCount: integer("items_count").notNull().default(0),
   status: varchar("status", { length: 24 }).notNull().default("new"),
   locale: varchar("locale", { length: 5 }).notNull().default("ar"),
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -111,6 +114,22 @@ export const orderItems = pgTable("order_items", {
   quantity: integer("quantity").notNull().default(1),
 });
 
+/** Key/value site-wide settings (contact, SEO, social). Database wins over `src/lib/site.ts`. */
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 120 }).notNull().unique(),
+  value: text("value").notNull().default(""),
+});
+
+/** Bilingual page copy. Empty values fall back to the hardcoded dictionary. */
+export const contentBlocks = pgTable("content_blocks", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 160 }).notNull().unique(),
+  valueAr: text("value_ar").notNull().default(""),
+  valueFr: text("value_fr").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type Service = typeof services.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Product = typeof products.$inferSelect;
@@ -118,3 +137,5 @@ export type Post = typeof posts.$inferSelect;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof orderItems.$inferSelect;
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type ContentBlock = typeof contentBlocks.$inferSelect;
