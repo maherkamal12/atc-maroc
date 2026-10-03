@@ -23,12 +23,12 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
           <form action={toggleMessage}>
             <input type="hidden" name="id" value={message.id} />
             <input type="hidden" name="isRead" value={String(message.isRead)} />
-            <button className="btn btn-outline">{message.isRead ? "Non lu" : "Marquer lu"}</button>
+            <button className="btn btn-outline">{message.isRead ? "غير مقروء" : "تعيين كمقروء"}</button>
           </form>
           <form action={archiveMessageAction}>
             <input type="hidden" name="id" value={message.id} />
             <input type="hidden" name="archived" value={String(message.archived)} />
-            <button className="btn btn-outline">{message.archived ? "Désarchiver" : "Archiver"}</button>
+            <button className="btn btn-outline">{message.archived ? "إلغاء الأرشفة" : "أرشفة"}</button>
           </form>
           <form action={deleteMessageAction}>
             <input type="hidden" name="id" value={message.id} />

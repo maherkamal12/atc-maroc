@@ -19,7 +19,7 @@ export default async function MediaPage({
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Médiathèque"
+        title="المكتبة الإعلامية"
         subtitle={`${items.length} fichier(s) · ${uploads} en stockage. Recherche, aperçu, copie d'URL, nettoyage des inutilisés.`}
       />
 
@@ -33,16 +33,16 @@ export default async function MediaPage({
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <h2 className="mb-3 text-sm font-extrabold">Enregistrer une URL existante</h2>
-          <ActionForm action={registerMediaUrlAction} submitLabel="Ajouter à la bibliothèque">
+          <ActionForm action={registerMediaUrlAction} submitLabel="إضافة إلى المكتبة">
             <Field label="URL" name="url" hint="Image déjà hébergée ailleurs" />
           </ActionForm>
         </div>
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <h2 className="mb-3 text-sm font-extrabold">Remplacer une image partout</h2>
-          <ActionForm action={replaceMediaAction} submitLabel="Remplacer partout">
+          <ActionForm action={replaceMediaAction} submitLabel="استبدال في كل مكان">
             <div className="grid gap-3">
-              <Field label="URL actuelle" name="from" />
-              <Field label="Nouvelle URL" name="to" />
+              <Field label="الرابط الحالي" name="from" />
+              <Field label="الرابط الجديد" name="to" />
             </div>
           </ActionForm>
         </div>

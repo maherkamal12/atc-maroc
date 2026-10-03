@@ -77,7 +77,7 @@ export async function login(_previous: LoginState, formData: FormData): Promise<
   const key = await clientKey();
 
   if (tooManyAttempts(key)) {
-    return { error: "Trop de tentatives. Patientez quelques minutes avant de réessayer." };
+    return { error: "محاولات كثيرة. انتظروا بضع دقائق ثم أعيدوا المحاولة." };
   }
 
   const password = String(formData.get("password") ?? "").trim();
@@ -85,7 +85,7 @@ export async function login(_previous: LoginState, formData: FormData): Promise<
     recordFailure(key);
     // Slow down automated guessing a little.
     await new Promise((resolve) => setTimeout(resolve, 400));
-    return { error: "Mot de passe incorrect. Réessayez." };
+    return { error: "كلمة المرور غير صحيحة. أعيدوا المحاولة." };
   }
 
   attempts.delete(key);

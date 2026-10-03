@@ -16,7 +16,7 @@ export default async function AdminPagesIndex({
       <AdminHeader
         title="Pages"
         subtitle="Textes et images des pages existantes + création de pages au même design."
-        action={{ href: "/admin/pages/new", label: "Nouvelle page" }}
+        action={{ href: "/admin/pages/new", label: "صفحة جديدة" }}
       />
       <DbBanner failed={db === "error"} />
 

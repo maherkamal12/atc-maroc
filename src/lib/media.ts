@@ -73,11 +73,11 @@ function isServerlessFs() {
 }
 
 export function mediaUploadHint() {
-  if (blobToken()) return "Les fichiers sont envoyés vers Vercel Blob.";
+  if (blobToken()) return "تُرفع الملفات إلى Vercel Blob.";
   if (isServerlessFs()) {
-    return "Sur Vercel, ajoutez BLOB_READ_WRITE_TOKEN (Storage → Blob) pour téléverser. En attendant, enregistrez une URL d'image ci-dessous.";
+    return "على Vercel أضيفوا BLOB_READ_WRITE_TOKEN (Storage → Blob) للرفع. إلى ذلك الحين سجّلوا رابط صورة أدناه.";
   }
-  return "Stockage local /public/media (dev). En production, configurez Vercel Blob.";
+  return "تخزين محلي /public/media أثناء التطوير. في الإنتاج استخدموا Vercel Blob.";
 }
 
 export function mediaUploadsEnabled() {
@@ -113,7 +113,7 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
   if (isServerlessFs()) {
     return {
       error:
-        "Impossible d'écrire dans /public sur Vercel. Créez un store Blob dans le projet Vercel et ajoutez BLOB_READ_WRITE_TOKEN, ou collez une URL d'image.",
+        "لا يمكن الكتابة على القرص في Vercel. أنشئوا Blob وأضيفوا BLOB_READ_WRITE_TOKEN، أو الصقوا رابط صورة.",
     };
   }
 

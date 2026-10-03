@@ -5,7 +5,7 @@ export function DbBanner({ failed, message }: { failed?: boolean; message?: stri
   return (
     <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
       {message ||
-        "La base de données n'a pas répondu : la modification n'a pas été enregistrée."}
+        "قاعدة البيانات لم تستجب: لم يُحفظ التعديل."}
     </p>
   );
 }
@@ -14,7 +14,7 @@ export function OkBanner({ show }: { show?: boolean }) {
   if (!show) return null;
   return (
     <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-      Enregistré.
+      تم الحفظ.
     </p>
   );
 }
@@ -31,7 +31,7 @@ export function AdminHeader({
   return (
     <header className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Administration</p>
+        <p className="text-[11px] font-bold tracking-wide text-slate-400">الإدارة</p>
         <h1 className="text-2xl font-extrabold text-brand-950">{title}</h1>
         {subtitle ? <p className="text-sm text-slate-500">{subtitle}</p> : null}
       </div>

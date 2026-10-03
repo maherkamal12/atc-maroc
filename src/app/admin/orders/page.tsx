@@ -45,7 +45,7 @@ export default async function AdminOrdersPage({
         <p className="text-sm text-slate-500">{filtered.length} commande(s) — devis, jamais de prix.</p>
       </header>
       <form className="flex flex-wrap gap-2" method="get">
-        <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="Recherche…" />
+        <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="بحث…" />
         <select name="status" defaultValue={sp.status ?? ""} className="field max-w-xs">
           <option value="">Tous statuts</option>
           {statuses.map((s) => (

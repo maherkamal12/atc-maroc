@@ -14,9 +14,9 @@ export default async function ServicesAdminPage({
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Services"
+        title="الخدمات"
         subtitle={`${services.length} service(s)`}
-        action={{ href: "/admin/services/new", label: "Nouveau service" }}
+        action={{ href: "/admin/services/new", label: "خدمة جديدة" }}
       />
       <DbBanner failed={db === "error"} />
       <div className="grid gap-4 md:grid-cols-2">

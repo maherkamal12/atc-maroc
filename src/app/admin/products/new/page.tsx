@@ -8,7 +8,7 @@ export default async function NewProductPage() {
   const categories = await getCategories();
   return (
     <div className="space-y-6">
-      <AdminHeader title="Nouveau produit" subtitle="Aucun prix — catalogue devis uniquement." />
+      <AdminHeader title="منتج جديد" subtitle="Aucun prix — catalogue devis uniquement." />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ProductForm categories={categories} />
       </div>

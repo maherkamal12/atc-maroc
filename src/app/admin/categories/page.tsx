@@ -15,9 +15,9 @@ export default async function CategoriesPage({
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Catégories"
+        title="التصنيفات"
         subtitle={`${cats.length} catégorie(s)`}
-        action={{ href: "/admin/categories/new", label: "Nouvelle catégorie" }}
+        action={{ href: "/admin/categories/new", label: "تصنيف جديد" }}
       />
       <DbBanner failed={Boolean(sp.error) || sp.db === "error"} message={sp.error} />
       <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">

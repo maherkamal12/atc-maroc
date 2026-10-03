@@ -11,7 +11,7 @@ function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn btn-primary" disabled={pending}>
-      {pending ? "Enregistrement…" : label}
+      {pending ? "جاري الحفظ…" : label}
     </button>
   );
 }
@@ -19,7 +19,7 @@ function Submit({ label }: { label: string }) {
 export function ActionForm({
   action,
   children,
-  submitLabel = "Enregistrer",
+  submitLabel = "حفظ",
 }: {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   children: ReactNode;
@@ -35,7 +35,7 @@ export function ActionForm({
       ) : null}
       {state.ok ? (
         <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
-          Enregistré.
+          تم الحفظ.
         </p>
       ) : null}
       {children}

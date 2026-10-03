@@ -12,7 +12,7 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
       <AdminHeader
         title="Articles de blog"
         subtitle={`${posts.length} article(s)`}
-        action={{ href: "/admin/blog/new", label: "Nouvel article" }}
+        action={{ href: "/admin/blog/new", label: "مقال جديد" }}
       />
       <DbBanner failed={db === "error"} />
       <div className="space-y-3">

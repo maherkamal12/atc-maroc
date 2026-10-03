@@ -8,14 +8,14 @@ export function CategoryForm({ category }: { category?: Category }) {
     <ActionForm action={saveCategoryAction}>
       {category ? <input type="hidden" name="id" value={category.id} /> : null}
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Nom FR" name="nameFr" defaultValue={category?.nameFr} required />
-        <Field label="Nom AR" name="nameAr" defaultValue={category?.nameAr} required dir="rtl" />
-        <Field label="Slug" name="slug" defaultValue={category?.slug} />
-        <Field label="Icône" name="icon" defaultValue={category?.icon ?? "📦"} />
-        <Field label="Ordre" name="sort" type="number" defaultValue={category?.sort ?? 0} />
+        <Field label="الاسم بالفرنسية" name="nameFr" defaultValue={category?.nameFr} required />
+        <Field label="الاسم بالعربية" name="nameAr" defaultValue={category?.nameAr} required dir="rtl" />
+        <Field label="المعرّف" name="slug" defaultValue={category?.slug} />
+        <Field label="الأيقونة" name="icon" defaultValue={category?.icon ?? "📦"} />
+        <Field label="الترتيب" name="sort" type="number" defaultValue={category?.sort ?? 0} />
         <Field label="Image (URL)" name="image" defaultValue={category?.image} />
-        <Field label="Description FR" name="descFr" defaultValue={category?.descFr} textarea />
-        <Field label="Description AR" name="descAr" defaultValue={category?.descAr} textarea dir="rtl" />
+        <Field label="الوصف بالفرنسية" name="descFr" defaultValue={category?.descFr} textarea />
+        <Field label="الوصف بالعربية" name="descAr" defaultValue={category?.descAr} textarea dir="rtl" />
       </div>
     </ActionForm>
   );

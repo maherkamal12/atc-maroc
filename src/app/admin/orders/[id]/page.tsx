@@ -53,7 +53,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <form action={archiveOrderAction}>
             <input type="hidden" name="id" value={order.id} />
             <input type="hidden" name="archived" value={String(order.archived)} />
-            <button className="btn btn-outline">{order.archived ? "Désarchiver" : "Archiver"}</button>
+            <button className="btn btn-outline">{order.archived ? "إلغاء الأرشفة" : "أرشفة"}</button>
           </form>
           <form action={deleteOrderAction}>
             <input type="hidden" name="id" value={order.id} />

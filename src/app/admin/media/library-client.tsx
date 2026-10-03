@@ -131,7 +131,7 @@ export function MediaLibrary({
                   className="rounded-lg bg-brand-950 px-2 py-1 text-[11px] font-bold text-white"
                   onClick={() => copyUrl(item.url)}
                 >
-                  {copied === item.url ? "Copié ✓" : "Copier l'URL"}
+                  {copied === item.url ? "تم النسخ ✓" : "نسخ الرابط"}
                 </button>
                 <button
                   type="button"
@@ -169,7 +169,7 @@ export function MediaLibrary({
             <p className="mt-3 break-all font-mono text-xs text-slate-500">{preview.url}</p>
             <div className="mt-3 flex gap-2">
               <button type="button" className="btn btn-primary !py-2 !text-xs" onClick={() => copyUrl(preview.url)}>
-                {copied === preview.url ? "Copié ✓" : "Copier l'URL"}
+                {copied === preview.url ? "تم النسخ ✓" : "نسخ الرابط"}
               </button>
               <button type="button" className="btn btn-outline !py-2 !text-xs" onClick={() => setPreview(null)}>
                 Fermer

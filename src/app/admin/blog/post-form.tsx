@@ -11,9 +11,9 @@ export function PostForm({ post }: { post?: Post }) {
     <ActionForm action={savePostAction}>
       {post ? <input type="hidden" name="id" value={post.id} /> : null}
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Titre FR" name="titleFr" defaultValue={post?.titleFr} required />
-        <Field label="Titre AR" name="titleAr" defaultValue={post?.titleAr} required dir="rtl" />
-        <Field label="Slug" name="slug" defaultValue={post?.slug} />
+        <Field label="العنوان بالفرنسية" name="titleFr" defaultValue={post?.titleFr} required />
+        <Field label="العنوان بالعربية" name="titleAr" defaultValue={post?.titleAr} required dir="rtl" />
+        <Field label="المعرّف" name="slug" defaultValue={post?.slug} />
         <Field label="Image (URL)" name="image" defaultValue={post?.image} />
         <Field label="Tag FR" name="tagFr" defaultValue={post?.tagFr} />
         <Field label="Tag AR" name="tagAr" defaultValue={post?.tagAr} dir="rtl" />
@@ -24,7 +24,7 @@ export function PostForm({ post }: { post?: Post }) {
         <Field label="Corps FR" name="bodyFr" defaultValue={post?.bodyFr} textarea />
         <Field label="Corps AR" name="bodyAr" defaultValue={post?.bodyAr} textarea dir="rtl" />
       </div>
-      <Check name="published" label="Publié" defaultChecked={post?.published ?? true} />
+      <Check name="published" label="منشور" defaultChecked={post?.published ?? true} />
     </ActionForm>
   );
 }

@@ -28,14 +28,14 @@ export default async function AdminProductsPage({
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Produits"
+        title="المنتجات"
         subtitle={`${total} produit(s) — devis uniquement, jamais de prix.`}
-        action={{ href: "/admin/products/new", label: "Nouveau produit" }}
+        action={{ href: "/admin/products/new", label: "منتج جديد" }}
       />
       <DbBanner failed={sp.db === "error"} />
 
       <form className="flex flex-wrap gap-2" method="get">
-        <input name="q" defaultValue={sp.q} placeholder="Recherche…" className="field max-w-xs" />
+        <input name="q" defaultValue={sp.q} placeholder="بحث…" className="field max-w-xs" />
         <select name="category" defaultValue={sp.category ?? ""} className="field max-w-xs">
           <option value="">Toutes les catégories</option>
           {categories.map((c) => (

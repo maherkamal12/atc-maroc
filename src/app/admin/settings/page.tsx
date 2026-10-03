@@ -7,30 +7,30 @@ import { defaultSite, getResolvedSite, SETTING_KEYS } from "@/lib/cms";
 export const dynamic = "force-dynamic";
 
 const labels: Record<(typeof SETTING_KEYS)[number], string> = {
-  nameAr: "Nom du site (AR)",
-  nameFr: "Nom du site (FR)",
-  taglineAr: "Slogan AR",
-  taglineFr: "Slogan FR",
-  email: "E-mail",
-  phone: "Téléphone (tel:)",
-  phoneDisplay: "Téléphone affiché",
-  whatsapp: "WhatsApp (sans +)",
-  instagram: "Instagram URL",
-  facebook: "Facebook URL",
-  addressAr: "Adresse AR",
-  addressFr: "Adresse FR",
-  hoursAr: "Horaires AR (une ligne par jour)",
-  hoursFr: "Horaires FR (une ligne par jour)",
-  mapUrl: "URL Google Maps",
-  seoTitleAr: "Titre SEO AR",
-  seoTitleFr: "Titre SEO FR",
-  seoDescAr: "Description SEO AR",
-  seoDescFr: "Description SEO FR",
-  heroSolar: "Image hero solaire",
-  heroElectrical: "Image hero électricité",
-  heroInterior: "Image hero intérieur",
-  logoUrl: "Logo (URL) — laissez vide pour le monogramme",
-  logoText: "Texte du monogramme (si pas d'image)",
+  nameAr: "اسم الموقع (عربي)",
+  nameFr: "اسم الموقع (فرنسي)",
+  taglineAr: "الشعار العربي",
+  taglineFr: "الشعار الفرنسي",
+  email: "البريد الإلكتروني",
+  phone: "الهاتف (للاتصال)",
+  phoneDisplay: "الهاتف المعروض",
+  whatsapp: "واتساب (بدون +)",
+  instagram: "رابط إنستغرام",
+  facebook: "رابط فيسبوك",
+  addressAr: "العنوان بالعربية",
+  addressFr: "العنوان بالفرنسية",
+  hoursAr: "أوقات العمل بالعربية",
+  hoursFr: "أوقات العمل بالفرنسية",
+  mapUrl: "رابط خرائط غوغل",
+  seoTitleAr: "عنوان محركات البحث عربي",
+  seoTitleFr: "عنوان محركات البحث فرنسي",
+  seoDescAr: "وصف محركات البحث عربي",
+  seoDescFr: "وصف محركات البحث فرنسي",
+  heroSolar: "صورة الطاقة الشمسية",
+  heroElectrical: "صورة الكهرباء",
+  heroInterior: "صورة التصميم الداخلي",
+  logoUrl: "رابط الشعار (فارغ = حرف ATC)",
+  logoText: "نص الشعار إن لم توجد صورة",
 };
 
 export default async function SettingsPage() {
@@ -39,8 +39,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Réglages du site"
-        subtitle="Les valeurs vides retombent sur les défauts de src/lib/site.ts."
+        title="إعدادات الموقع"
+        subtitle="الحقول الفارغة تُظهر القيم الأصلية للموقع."
       />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ActionForm action={saveSettingsAction}>

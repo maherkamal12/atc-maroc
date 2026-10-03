@@ -11,7 +11,7 @@ export default async function ContentPage() {
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Textes et photos des pages"
+        title="نصوص وصور الصفحات"
         subtitle="Chaque page du site : AR + FR, et URL d'image. Vide = texte d'origine."
       />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">

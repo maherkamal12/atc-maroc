@@ -11,7 +11,7 @@ function Submit() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn btn-primary" disabled={pending}>
-      {pending ? "Enregistrement…" : "Enregistrer le menu et le logo"}
+      {pending ? "جاري الحفظ…" : "حفظ القائمة والشعار"}
     </button>
   );
 }
