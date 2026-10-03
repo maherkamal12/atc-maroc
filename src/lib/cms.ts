@@ -293,8 +293,12 @@ export async function listNavRows(): Promise<MenuRow[]> {
   await ensureSeeded();
   if (!canQueryDatabase()) return defaultMenuRows();
   try {
-    const rows = await db.select().from(navItems).orderBy(asc(navItems.sort), asc(navItems.id));
-    if (!rows.length) return defaultMenuRows();
+    const [rows, settings] = await Promise.all([
+      db.select().from(navItems).orderBy(asc(navItems.sort), asc(navItems.id)),
+      getSettingsMap(),
+    ]);
+    const managed = settings.navManaged === "1";
+    if (!managed && !rows.length) return defaultMenuRows();
     return rows.map((row: NavItem) => ({
       id: row.id,
       href: row.href,
@@ -346,6 +350,10 @@ export async function saveNavRows(rows: Omit<MenuRow, "id">[]): Promise<boolean>
         })),
       );
     }
+    await db
+      .insert(siteSettings)
+      .values({ key: "navManaged", value: "1" })
+      .onConflictDoUpdate({ target: siteSettings.key, set: { value: "1" } });
     return true;
   } catch (error) {
     markDatabaseUnavailable("saveNavRows", error);
