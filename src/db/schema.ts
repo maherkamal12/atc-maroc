@@ -180,4 +180,15 @@ export type SiteSetting = typeof siteSettings.$inferSelect;
 export type ContentBlock = typeof contentBlocks.$inferSelect;
 export type NavItem = typeof navItems.$inferSelect;
 export type CustomPage = typeof customPages.$inferSelect;
+/** Back-office accounts: manager (full) or user (CMS without user admin). */
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 80 }).notNull().unique(),
+  displayName: text("display_name").notNull().default(""),
+  role: varchar("role", { length: 20 }).notNull().default("user"),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type MediaAsset = typeof mediaAssets.$inferSelect;
+export type AdminUser = typeof adminUsers.$inferSelect;

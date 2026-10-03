@@ -173,6 +173,16 @@ export const DDL_STATEMENTS: readonly string[] = [
     "created_at" timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT "media_assets_url_unique" UNIQUE("url")
   )`,
+
+  `CREATE TABLE IF NOT EXISTS "admin_users" (
+    "id" serial PRIMARY KEY NOT NULL,
+    "username" varchar(80) NOT NULL,
+    "display_name" text DEFAULT '' NOT NULL,
+    "role" varchar(20) DEFAULT 'user' NOT NULL,
+    "password_hash" text NOT NULL,
+    "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT "admin_users_username_unique" UNIQUE("username")
+  )`,
 ];
 
 /** Idempotent column additions for databases created before this schema. */
@@ -196,4 +206,5 @@ export const EXPECTED_TABLES: readonly string[] = [
   "nav_items",
   "custom_pages",
   "media_assets",
+  "admin_users",
 ];

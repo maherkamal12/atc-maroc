@@ -41,6 +41,22 @@ export function LoginForm({
         </p>
       ) : null}
 
+      <label className="mb-1.5 block text-sm font-bold text-brand-950" htmlFor="username">
+        اسم المستخدم
+      </label>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        className="field mb-4"
+        placeholder="admin"
+        autoComplete="username"
+        autoCapitalize="off"
+        autoCorrect="off"
+        spellCheck={false}
+        required
+      />
+
       <label className="mb-1.5 block text-sm font-bold text-brand-950" htmlFor="password">
         كلمة المرور
       </label>
@@ -79,7 +95,7 @@ export function LoginForm({
 
       <p className="mt-4 text-center text-[11px] text-slate-400">
         {showDefaultHint
-          ? "كلمة المرور الافتراضية: atc2026 (المتغير ADMIN_PASSWORD)"
+          ? "أول دخول: المستخدم admin وكلمة المرور atc2026"
           : "الدخول مخصص لفريق أطلس تك كونسيبت."}
       </p>
     </form>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { isAdmin, logout, usingDefaultAdminPassword } from "./actions";
+import { getAdminSession, isAdmin, logout, usingDefaultAdminPassword } from "./actions";
 import { LoginForm } from "./login-form";
 
 export const dynamic = "force-dynamic";
@@ -18,11 +18,13 @@ const links = [
   { href: "/admin/settings", label: "إعدادات الموقع", icon: "⚙️" },
   { href: "/admin/messages", label: "الرسائل", icon: "✉️" },
   { href: "/admin/orders", label: "الطلبات", icon: "🧾" },
+  { href: "/admin/users", label: "المدير والمستخدمون", icon: "👤", managerOnly: true },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const authed = await isAdmin();
   const usingDefault = await usingDefaultAdminPassword();
+  const session = authed ? await getAdminSession() : null;
 
   if (!authed) {
     return (
@@ -45,7 +47,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           <span className="text-sm font-extrabold">إدارة أطلس تك</span>
         </Link>
         <nav className="mt-8 grid grid-cols-2 gap-1 lg:grid-cols-1">
-          {links.map((link) => (
+          {links
+            .filter((link) => !("managerOnly" in link && link.managerOnly) || session?.role === "manager")
+            .map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -57,6 +61,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           ))}
         </nav>
         <div className="mt-10 space-y-2 border-t border-white/10 pt-6 text-xs text-white/60">
+          {session ? (
+            <p className="text-white/80">
+              {session.displayName}{" "}
+              <span className="text-white/50">({session.role === "manager" ? "مدير" : "مستخدم"})</span>
+            </p>
+          ) : null}
           <Link href="/ar" className="block hover:text-accent-400">
             ← الموقع بالعربية
           </Link>
