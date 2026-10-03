@@ -3,8 +3,23 @@ import { listMessages } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminMessagesPage() {
-  const messages = await listMessages();
+
+function DatabaseErrorBanner({ failed }: { failed: boolean }) {
+  if (!failed) return null;
+  return (
+    <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      La base de données n&apos;a pas répondu : la modification n&apos;a pas été enregistrée. Vérifiez
+      la connexion (tableau de bord → Base de données).
+    </p>
+  );
+}
+
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ db?: string }>;
+}) {
+  const [{ db }, messages] = await Promise.all([searchParams, listMessages()]);
 
   return (
     <div className="space-y-6">
@@ -12,6 +27,8 @@ export default async function AdminMessagesPage() {
         <h1 className="text-2xl font-extrabold text-brand-950">Messages de contact</h1>
         <p className="text-sm text-slate-500">{messages.length} message(s) reçu(s) depuis le site.</p>
       </header>
+
+      <DatabaseErrorBanner failed={db === "error"} />
 
       {messages.length ? (
         <div className="space-y-4">

@@ -1,22 +1,37 @@
-import { canQueryDatabase, db, isDatabaseConfigured } from "@/db";
-import { sql } from "drizzle-orm";
+import { databaseStatus } from "@/db/status";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Health check. Reports what is wrong with the database instead of a bare
+ * `up`/`down`: a Neon project without tables used to look healthy while every
+ * write was silently dropped.
+ *
+ * - 200 `{ ok: true, database: "up" }` — reachable and fully provisioned
+ * - 503 `{ ok: false, database: "migration_required" }` — reachable, tables missing
+ * - 503 `{ ok: false, database: "unavailable" }` — unreachable / wrong credentials
+ * - 503 `{ ok: false, database: "not_configured" }` — DATABASE_URL is unset
+ */
 export async function GET() {
-  if (!isDatabaseConfigured()) {
-    return Response.json({ ok: false, database: "not_configured" }, { status: 500 });
-  }
+  const status = await databaseStatus();
 
-  if (!canQueryDatabase()) {
-    // Recently failed: don't make the health check wait for another timeout.
-    return Response.json({ ok: false, database: "unavailable" }, { status: 500 });
-  }
+  const state = !status.configured
+    ? "not_configured"
+    : !status.reachable
+      ? "unavailable"
+      : status.schema !== "ready"
+        ? "migration_required"
+        : "up";
 
-  try {
-    await db.execute(sql`select 1`);
-    return Response.json({ ok: true, database: "up" });
-  } catch {
-    return Response.json({ ok: false, database: "unavailable" }, { status: 500 });
-  }
+  const body = {
+    ok: state === "up",
+    database: state,
+    target: status.target,
+    tables: status.missingTables.length ? { missing: status.missingTables } : "ready",
+    rows: status.rows,
+    autoMigrate: status.autoMigrate,
+    error: status.error,
+  };
+
+  return Response.json(body, { status: state === "up" ? 200 : 503 });
 }
