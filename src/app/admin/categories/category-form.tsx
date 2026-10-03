@@ -13,7 +13,7 @@ export function CategoryForm({ category }: { category?: Category }) {
         <Field label="المعرّف" name="slug" defaultValue={category?.slug} />
         <Field label="الأيقونة" name="icon" defaultValue={category?.icon ?? "📦"} />
         <Field label="الترتيب" name="sort" type="number" defaultValue={category?.sort ?? 0} />
-        <Field label="Image (URL)" name="image" defaultValue={category?.image} />
+        <Field label="رابط الصورة" name="image" defaultValue={category?.image} />
         <Field label="الوصف بالفرنسية" name="descFr" defaultValue={category?.descFr} textarea />
         <Field label="الوصف بالعربية" name="descAr" defaultValue={category?.descAr} textarea dir="rtl" />
       </div>

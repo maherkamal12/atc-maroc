@@ -13,13 +13,13 @@ export function ServiceForm({ service }: { service?: Service }) {
         <Field label="المعرّف" name="slug" defaultValue={service?.slug} />
         <Field label="الأيقونة" name="icon" defaultValue={service?.icon ?? "⚡"} />
         <Field label="الترتيب" name="sort" type="number" defaultValue={service?.sort ?? 0} />
-        <Field label="Image (URL)" name="image" defaultValue={service?.image} />
-        <Field label="Résumé FR" name="shortFr" defaultValue={service?.shortFr} textarea />
-        <Field label="Résumé AR" name="shortAr" defaultValue={service?.shortAr} textarea dir="rtl" />
-        <Field label="Corps FR" name="bodyFr" defaultValue={service?.bodyFr} textarea />
-        <Field label="Corps AR" name="bodyAr" defaultValue={service?.bodyAr} textarea dir="rtl" />
-        <Field label="Puces FR (|)" name="bulletsFr" defaultValue={service?.bulletsFr} textarea />
-        <Field label="Puces AR (|)" name="bulletsAr" defaultValue={service?.bulletsAr} textarea dir="rtl" />
+        <Field label="رابط الصورة" name="image" defaultValue={service?.image} />
+        <Field label="الملخص بالفرنسية" name="shortFr" defaultValue={service?.shortFr} textarea />
+        <Field label="الملخص بالعربية" name="shortAr" defaultValue={service?.shortAr} textarea dir="rtl" />
+        <Field label="المحتوى بالفرنسية" name="bodyFr" defaultValue={service?.bodyFr} textarea />
+        <Field label="المحتوى بالعربية" name="bodyAr" defaultValue={service?.bodyAr} textarea dir="rtl" />
+        <Field label="النقاط بالفرنسية (|)" name="bulletsFr" defaultValue={service?.bulletsFr} textarea />
+        <Field label="النقاط بالعربية (|)" name="bulletsAr" defaultValue={service?.bulletsAr} textarea dir="rtl" />
       </div>
     </ActionForm>
   );

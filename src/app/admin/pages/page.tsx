@@ -14,27 +14,27 @@ export default async function AdminPagesIndex({
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Pages"
-        subtitle="Textes et images des pages existantes + création de pages au même design."
+        title="الصفحات"
+        subtitle="نصوص وصور الصفحات الحالية + إنشاء صفحات بنفس التصميم."
         action={{ href: "/admin/pages/new", label: "صفحة جديدة" }}
       />
       <DbBanner failed={db === "error"} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {[
-          { href: "/admin/content#Accueil", title: "Accueil", hint: "Hero, textes, images" },
-          { href: "/admin/content#À propos", title: "À propos", hint: "Mission, vision, image" },
-          { href: "/admin/content#Design", title: "Design", hint: "Blocs + photos" },
-          { href: "/admin/content#Contact", title: "Contact", hint: "Chapô et visuel" },
+          { href: "/admin/content#الرئيسية", title: "الرئيسية", hint: "الشاشة والنصوص والصور" },
+          { href: "/admin/content#من نحن", title: "من نحن", hint: "المهمة والرؤية والصورة" },
+          { href: "/admin/content#التصميم", title: "التصميم", hint: "أقسام وصور" },
+          { href: "/admin/content#اتصل بنا", title: "اتصل بنا", hint: "المقدمة والصورة" },
         ].map((item) => (
           <Link key={item.href} href={item.href} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <p className="font-extrabold text-brand-950">{item.title}</p>
-            <p className="text-xs text-slate-500">{item.hint} — modifier textes & photos</p>
+            <p className="text-xs text-slate-500">{item.hint} — تعديل النصوص والصور</p>
           </Link>
         ))}
       </div>
 
-      <h2 className="text-lg font-extrabold text-brand-950">Pages créées</h2>
+      <h2 className="text-lg font-extrabold text-brand-950">الصفحات المنشأة</h2>
       {pages.length ? (
         <div className="space-y-3">
           {pages.map((page) => (
@@ -45,17 +45,17 @@ export default async function AdminPagesIndex({
               <div>
                 <p className="font-extrabold">{page.titleFr}</p>
                 <p className="text-xs text-slate-500">
-                  /p/{page.slug} · {page.published ? "publiée" : "brouillon"}
+                  /p/{page.slug} · {page.published ? "منشورة" : "مسودة"}
                 </p>
               </div>
               <div className="flex gap-3 text-xs font-bold">
                 <Link href={`/fr/p/${page.slug}`} className="text-brand-700">
-                  Voir
+                  عرض
                 </Link>
-                <Link href={`/admin/pages/${page.id}`}>Modifier</Link>
+                <Link href={`/admin/pages/${page.id}`}>تعديل</Link>
                 <form action={deletePageAction}>
                   <input type="hidden" name="id" value={page.id} />
-                  <button className="text-red-600">Supprimer</button>
+                  <button className="text-red-600">حذف</button>
                 </form>
               </div>
             </article>
@@ -63,7 +63,7 @@ export default async function AdminPagesIndex({
         </div>
       ) : (
         <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-          Aucune page personnalisée. Créez-en une : en-tête + blocs image/texte comme la page Design.
+          لا صفحات مخصصة. أنشئوا واحدة: رأس + أقسام صورة/نص مثل صفحة التصميم.
         </p>
       )}
     </div>

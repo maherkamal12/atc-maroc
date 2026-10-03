@@ -5,11 +5,11 @@ import { listAllOrderItems, listOrders } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 const statuses = [
-  { value: "new", label: "Nouvelle" },
-  { value: "contacted", label: "Contacté" },
-  { value: "confirmed", label: "Confirmée" },
-  { value: "delivered", label: "Livrée" },
-  { value: "cancelled", label: "Annulée" },
+  { value: "new", label: "جديدة" },
+  { value: "contacted", label: "تم التواصل" },
+  { value: "confirmed", label: "مؤكدة" },
+  { value: "delivered", label: "مُسلَّمة" },
+  { value: "cancelled", label: "ملغاة" },
 ];
 
 
@@ -17,8 +17,7 @@ function DatabaseErrorBanner({ failed }: { failed: boolean }) {
   if (!failed) return null;
   return (
     <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-      La base de données n&apos;a pas répondu : la modification n&apos;a pas été enregistrée. Vérifiez
-      la connexion (tableau de bord → Base de données).
+      قاعدة البيانات لم تستجب: لم يُحفظ التعديل. تحققوا من الاتصال (لوحة التحكم ← قاعدة البيانات).
     </p>
   );
 }
@@ -41,22 +40,22 @@ export default async function AdminOrdersPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-extrabold text-brand-950">Commandes</h1>
-        <p className="text-sm text-slate-500">{filtered.length} commande(s) — devis, jamais de prix.</p>
+        <h1 className="text-2xl font-extrabold text-brand-950">الطلبات</h1>
+        <p className="text-sm text-slate-500">{filtered.length} طلب — عروض أسعار دون أسعار.</p>
       </header>
       <form className="flex flex-wrap gap-2" method="get">
         <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="بحث…" />
         <select name="status" defaultValue={sp.status ?? ""} className="field max-w-xs">
-          <option value="">Tous statuts</option>
+          <option value="">كل الحالات</option>
           {statuses.map((s) => (
             <option key={s.value} value={s.value}>
               {s.label}
             </option>
           ))}
         </select>
-        <button className="btn btn-primary">Filtrer</button>
+        <button className="btn btn-primary">تصفية</button>
         <Link className="btn btn-outline" href="/admin/orders/export">
-          Export CSV
+          تصدير CSV
         </Link>
       </form>
 
@@ -67,12 +66,12 @@ export default async function AdminOrdersPage({
           <table className="w-full min-w-[52rem] text-sm">
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
-                <th className="px-4 py-3 text-start">Référence</th>
-                <th className="px-4 py-3 text-start">Client</th>
-                <th className="px-4 py-3 text-start">Produits</th>
-                <th className="px-4 py-3 text-start">Articles</th>
-                <th className="px-4 py-3 text-start">Date</th>
-                <th className="px-4 py-3 text-start">Statut</th>
+                <th className="px-4 py-3 text-start">المرجع</th>
+                <th className="px-4 py-3 text-start">العميل</th>
+                <th className="px-4 py-3 text-start">المنتجات</th>
+                <th className="px-4 py-3 text-start">القطع</th>
+                <th className="px-4 py-3 text-start">التاريخ</th>
+                <th className="px-4 py-3 text-start">الحالة</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -107,8 +106,8 @@ export default async function AdminOrdersPage({
                       </ul>
                     </td>
                     <td className="px-4 py-3 font-extrabold text-brand-900">
-                      {order.itemsCount} article(s)
-                      <span className="block text-[11px] font-semibold text-slate-400">prix sur demande</span>
+                      {order.itemsCount} قطعة
+                      <span className="block text-[11px] font-semibold text-slate-400">السعر عند الطلب</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500">
                       {new Date(order.createdAt).toLocaleDateString("fr-FR")}
@@ -131,7 +130,7 @@ export default async function AdminOrdersPage({
                           type="submit"
                           className="rounded-lg bg-brand-950 px-3 py-1.5 text-xs font-bold text-white"
                         >
-                          OK
+                          موافق
                         </button>
                       </form>
                     </td>
@@ -143,7 +142,7 @@ export default async function AdminOrdersPage({
         </div>
       ) : (
         <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
-          Aucune commande. Les commandes passées depuis le panier apparaîtront ici.
+          لا طلبات. ستظهر هنا طلبات سلة العروض.
         </p>
       )}
     </div>

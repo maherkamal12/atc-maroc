@@ -68,27 +68,27 @@ export function MediaLibrary({
 
       <div className="flex flex-wrap items-end gap-2 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
         <label className="block min-w-[14rem] flex-1 text-xs font-bold">
-          Recherche
+          بحث
           <input
             className="field mt-1"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Nom, URL, fiche…"
+            placeholder="الاسم، الرابط، البطاقة…"
           />
         </label>
         <label className="block text-xs font-bold">
-          Filtre
+          تصفية
           <select className="field mt-1" value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
-            <option value="all">Tous ({items.length})</option>
-            <option value="uploads">Fichiers stockés</option>
-            <option value="used">Utilisés</option>
-            <option value="unused">Inutilisés ({unusedCount})</option>
+            <option value="all">الكل ({items.length})</option>
+            <option value="uploads">الملفات المخزّنة</option>
+            <option value="used">مستخدمة</option>
+            <option value="unused">غير مستخدمة ({unusedCount})</option>
           </select>
         </label>
       </div>
 
       <p className="text-xs text-slate-500">
-        {filtered.length} fichier(s). Copiez l&apos;URL pour coller dans un produit, une page ou un bloc.
+        {filtered.length} ملف. انسخوا الرابط للصقه في منتج أو صفحة أو قسم.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,7 +100,7 @@ export function MediaLibrary({
             </button>
             <div className="space-y-2 p-3">
               <p className="truncate text-sm font-bold text-brand-950" title={item.filename}>
-                {item.filename || "sans nom"}
+                {item.filename || "بدون اسم"}
               </p>
               <p className="truncate font-mono text-[10px] text-slate-400" title={item.url}>
                 {item.url}
@@ -119,11 +119,11 @@ export function MediaLibrary({
                     </li>
                   ))}
                   {item.usedBy.length > 4 ? (
-                    <li className="text-slate-400">+{item.usedBy.length - 4} autre(s)</li>
+                    <li className="text-slate-400">+{item.usedBy.length - 4} أخرى</li>
                   ) : null}
                 </ul>
               ) : (
-                <p className="text-[11px] font-bold text-amber-700">Inutilisé — peut être nettoyé</p>
+                <p className="text-[11px] font-bold text-amber-700">غير مستخدم — يمكن حذفه</p>
               )}
               <div className="flex flex-wrap gap-1 pt-1">
                 <button
@@ -138,14 +138,14 @@ export function MediaLibrary({
                   className="rounded-lg border border-slate-200 px-2 py-1 text-[11px] font-bold"
                   onClick={() => setPreview(item)}
                 >
-                  Aperçu
+                  معاينة
                 </button>
                 {!item.usedBy.length ? (
                   <form action={deleteMediaAction}>
                     <input type="hidden" name="id" value={item.id} />
                     <input type="hidden" name="url" value={item.url} />
                     <button className="rounded-lg bg-red-50 px-2 py-1 text-[11px] font-bold text-red-700">
-                      Supprimer
+                      حذف
                     </button>
                   </form>
                 ) : null}
@@ -172,7 +172,7 @@ export function MediaLibrary({
                 {copied === preview.url ? "تم النسخ ✓" : "نسخ الرابط"}
               </button>
               <button type="button" className="btn btn-outline !py-2 !text-xs" onClick={() => setPreview(null)}>
-                Fermer
+                إغلاق
               </button>
             </div>
           </div>

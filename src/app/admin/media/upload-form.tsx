@@ -19,14 +19,14 @@ export function UploadForm({ hint, enabled }: { hint: string; enabled: boolean }
     try {
       const res = await fetch("/admin/media/upload", { method: "POST", body: data });
       const json = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok) setError(json.error || "Échec de l'envoi");
+      if (!res.ok) setError(json.error || "فشل الرفع");
       else {
         setUrl(json.url ?? "");
         form.reset();
         router.refresh();
       }
     } catch {
-      setError("Échec de l'envoi");
+      setError("فشل الرفع");
     } finally {
       setPending(false);
     }
@@ -34,7 +34,7 @@ export function UploadForm({ hint, enabled }: { hint: string; enabled: boolean }
 
   return (
     <form onSubmit={onSubmit} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-extrabold text-brand-950">Téléverser un fichier</h2>
+      <h2 className="text-sm font-extrabold text-brand-950">رفع ملف</h2>
       <p className="mt-1 text-xs text-slate-500">{hint}</p>
       <input type="file" name="file" accept="image/*,.webp,.svg,.pdf" className="mt-3 text-sm" required disabled={!enabled} />
       <button className="btn btn-primary mt-3" disabled={pending || !enabled} type="submit">
@@ -43,7 +43,7 @@ export function UploadForm({ hint, enabled }: { hint: string; enabled: boolean }
       {error ? <p className="mt-2 text-xs font-bold text-red-600">{error}</p> : null}
       {url ? (
         <p className="mt-2 break-all text-xs">
-          Ajouté : <code>{url}</code>
+          أُضيف: <code>{url}</code>
         </p>
       ) : null}
     </form>

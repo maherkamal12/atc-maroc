@@ -10,7 +10,7 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
   if (!service) notFound();
   return (
     <div className="space-y-6">
-      <AdminHeader title={`Service · ${service.titleFr}`} />
+      <AdminHeader title={`خدمة · ${service.titleFr}`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ServiceForm service={service} />
       </div>

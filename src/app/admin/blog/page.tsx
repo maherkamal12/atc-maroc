@@ -10,8 +10,8 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Articles de blog"
-        subtitle={`${posts.length} article(s)`}
+        title="مقالات المدونة"
+        subtitle={`${posts.length} مقال`}
         action={{ href: "/admin/blog/new", label: "مقال جديد" }}
       />
       <DbBanner failed={db === "error"} />
@@ -21,16 +21,16 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
             <div>
               <p className="font-extrabold text-brand-950">{p.titleFr}</p>
               <p className="text-xs text-slate-500">
-                {p.published ? "publié" : "brouillon"} · {new Date(p.publishedAt).toLocaleDateString("fr-FR")}
+                {p.published ? "منشور" : "مسودة"} · {new Date(p.publishedAt).toLocaleDateString("ar-MA")}
               </p>
             </div>
             <div className="flex gap-3">
               <Link href={`/admin/blog/${p.id}`} className="text-xs font-bold">
-                Modifier
+                تعديل
               </Link>
               <form action={deletePostAction}>
                 <input type="hidden" name="id" value={p.id} />
-                <button className="text-xs font-bold text-red-600">Supprimer</button>
+                <button className="text-xs font-bold text-red-600">حذف</button>
               </form>
             </div>
           </article>

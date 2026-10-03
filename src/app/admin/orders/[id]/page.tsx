@@ -8,12 +8,12 @@ import { AdminHeader } from "../../_ui";
 export const dynamic = "force-dynamic";
 
 const statuses = [
-  { value: "new", label: "Nouvelle" },
-  { value: "contacted", label: "Contacté" },
-  { value: "confirmed", label: "Confirmée" },
-  { value: "delivered", label: "Livrée" },
-  { value: "cancelled", label: "Annulée" },
-  { value: "archived", label: "Archivée" },
+  { value: "new", label: "جديدة" },
+  { value: "contacted", label: "تم التواصل" },
+  { value: "confirmed", label: "مؤكدة" },
+  { value: "delivered", label: "مُسلَّمة" },
+  { value: "cancelled", label: "ملغاة" },
+  { value: "archived", label: "مؤرشفة" },
 ];
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -22,7 +22,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const { order, items } = data;
   return (
     <div className="space-y-6">
-      <AdminHeader title={order.reference} subtitle={`${order.customerName} · devis sans prix`} />
+      <AdminHeader title={order.reference} subtitle={`${order.customerName} · عرض سعر دون أسعار`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <p className="text-sm">
           {order.email} · {order.phone}
@@ -47,7 +47,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               </option>
             ))}
           </select>
-          <button className="btn btn-primary">Mettre à jour</button>
+          <button className="btn btn-primary">تحديث</button>
         </form>
         <div className="mt-4 flex gap-2">
           <form action={archiveOrderAction}>
@@ -57,10 +57,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </form>
           <form action={deleteOrderAction}>
             <input type="hidden" name="id" value={order.id} />
-            <button className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700">Supprimer</button>
+            <button className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700">حذف</button>
           </form>
           <Link href="/admin/orders" className="btn btn-outline">
-            Retour
+            رجوع
           </Link>
         </div>
       </div>

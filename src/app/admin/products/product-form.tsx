@@ -10,9 +10,9 @@ export function ProductForm({ product, categories }: { product?: Product; catego
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="الاسم (فرنسي)" name="nameFr" defaultValue={product?.nameFr} required />
         <Field label="الاسم (عربي)" name="nameAr" defaultValue={product?.nameAr} required dir="rtl" />
-        <Field label="المعرّف" name="slug" defaultValue={product?.slug} hint="Laissé vide = généré automatiquement" />
+        <Field label="المعرّف" name="slug" defaultValue={product?.slug} hint="اتركوه فارغاً ليُولَّد تلقائياً" />
         <label className="block space-y-1">
-          <span className="text-xs font-bold text-brand-950">Catégorie</span>
+          <span className="text-xs font-bold text-brand-950">التصنيف</span>
           <select name="categorySlug" defaultValue={product?.categorySlug} className="field" required>
             {categories.map((c) => (
               <option key={c.slug} value={c.slug}>
@@ -25,28 +25,28 @@ export function ProductForm({ product, categories }: { product?: Product; catego
         <Field label="الترتيب" name="sort" type="number" defaultValue={product?.sort ?? 0} />
         <div className="md:col-span-2">
           <Field
-            label="Image (URL)"
+            label="رابط الصورة"
             name="image"
             defaultValue={product?.image}
-            hint="URL externe, ou importez un fichier depuis Images."
+            hint="رابط خارجي، أو ارفعوا ملفاً من المكتبة الإعلامية."
           />
         </div>
         <Field label="الوصف بالفرنسية" name="descFr" defaultValue={product?.descFr} textarea />
         <Field label="الوصف بالعربية" name="descAr" defaultValue={product?.descAr} textarea dir="rtl" />
         <Field
-          label="Caractéristiques FR"
+          label="المواصفات بالفرنسية"
           name="specsFr"
           defaultValue={product?.specsFr}
           textarea
-          hint="Séparées par |"
+          hint="افصلوا بـ |"
         />
         <Field
-          label="Caractéristiques AR"
+          label="المواصفات بالعربية"
           name="specsAr"
           defaultValue={product?.specsAr}
           textarea
           dir="rtl"
-          hint="Séparées par |"
+          hint="افصلوا بـ |"
         />
       </div>
       <div className="flex flex-wrap gap-6">

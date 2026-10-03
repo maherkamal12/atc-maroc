@@ -10,7 +10,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   if (!category) notFound();
   return (
     <div className="space-y-6">
-      <AdminHeader title={`Catégorie · ${category.nameFr}`} />
+      <AdminHeader title={`تصنيف · ${category.nameFr}`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <CategoryForm category={category} />
       </div>

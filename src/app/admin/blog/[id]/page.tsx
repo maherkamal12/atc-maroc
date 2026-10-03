@@ -10,7 +10,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   if (!post) notFound();
   return (
     <div className="space-y-6">
-      <AdminHeader title={`Article · ${post.titleFr}`} />
+      <AdminHeader title={`مقال · ${post.titleFr}`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <PostForm post={post} />
       </div>

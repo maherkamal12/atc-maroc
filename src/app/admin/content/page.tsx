@@ -12,7 +12,7 @@ export default async function ContentPage() {
     <div className="space-y-6">
       <AdminHeader
         title="نصوص وصور الصفحات"
-        subtitle="Chaque page du site : AR + FR, et URL d'image. Vide = texte d'origine."
+        subtitle="كل صفحة: عربي وفرنسي ورابط صورة. الفراغ يُظهر النص الأصلي."
       />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ActionForm action={saveContentAction}>
@@ -48,7 +48,7 @@ export default async function ContentPage() {
                         <input type="hidden" name="key" value={block.key} />
                         <div className="mt-2 grid gap-3 md:grid-cols-2">
                           <label className="block space-y-1">
-                            <span className="text-xs font-bold">Français</span>
+                            <span className="text-xs font-bold">الفرنسية</span>
                             <textarea
                               name="valueFr"
                               className="field min-h-24"

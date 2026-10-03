@@ -57,7 +57,7 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-extrabold text-brand-950">Tableau de bord</h1>
+        <h1 className="text-2xl font-extrabold text-brand-950">لوحة التحكم</h1>
         <p className="text-sm text-slate-500">
           متابعة رسائل التواصل وطلبات عروض الأسعار.
         </p>

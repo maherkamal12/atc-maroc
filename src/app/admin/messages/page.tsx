@@ -9,8 +9,7 @@ function DatabaseErrorBanner({ failed }: { failed: boolean }) {
   if (!failed) return null;
   return (
     <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-      La base de données n&apos;a pas répondu : la modification n&apos;a pas été enregistrée. Vérifiez
-      la connexion (tableau de bord → Base de données).
+      قاعدة البيانات لم تستجب: لم يُحفظ التعديل. تحققوا من الاتصال (لوحة التحكم ← قاعدة البيانات).
     </p>
   );
 }
@@ -33,14 +32,14 @@ export default async function AdminMessagesPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-extrabold text-brand-950">Messages de contact</h1>
-        <p className="text-sm text-slate-500">{filtered.length} message(s).</p>
+        <h1 className="text-2xl font-extrabold text-brand-950">رسائل التواصل</h1>
+        <p className="text-sm text-slate-500">{filtered.length} رسالة.</p>
       </header>
       <form className="flex flex-wrap gap-2" method="get">
         <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="بحث…" />
-        <button className="btn btn-primary">Filtrer</button>
+        <button className="btn btn-primary">تصفية</button>
         <Link className="btn btn-outline" href="/admin/messages/export">
-          Export CSV
+          تصدير CSV
         </Link>
       </form>
 
@@ -76,7 +75,7 @@ export default async function AdminMessagesPage({
                 </p>
               )}
               <Link href={`/admin/messages/${message.id}`} className="mt-3 inline-block text-xs font-bold">
-                Détail
+                التفاصيل
               </Link>
               <form action={toggleMessage} className="mt-4">
                 <input type="hidden" name="id" value={message.id} />
@@ -85,7 +84,7 @@ export default async function AdminMessagesPage({
                   type="submit"
                   className="rounded-full border border-slate-200 px-4 py-1.5 text-xs font-bold text-brand-800 transition hover:bg-slate-50"
                 >
-                  {message.isRead ? "Marquer comme non lu" : "Marquer comme lu"}
+                  {message.isRead ? "تعيين كغير مقروء" : "تعيين كمقروء"}
                 </button>
               </form>
             </article>
@@ -93,7 +92,7 @@ export default async function AdminMessagesPage({
         </div>
       ) : (
         <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
-          Aucun message reçu. Les envois via le formulaire de contact apparaîtront ici.
+          لا رسائل. ستظهر هنا رسائل نموذج التواصل.
         </p>
       )}
     </div>

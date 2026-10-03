@@ -16,7 +16,7 @@ export default async function CategoriesPage({
     <div className="space-y-6">
       <AdminHeader
         title="التصنيفات"
-        subtitle={`${cats.length} catégorie(s)`}
+        subtitle={`${cats.length} تصنيف`}
         action={{ href: "/admin/categories/new", label: "تصنيف جديد" }}
       />
       <DbBanner failed={Boolean(sp.error) || sp.db === "error"} message={sp.error} />
@@ -24,10 +24,10 @@ export default async function CategoriesPage({
         <table className="w-full min-w-[40rem] text-sm">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500">
             <tr>
-              <th className="px-4 py-3 text-start">Catégorie</th>
-              <th className="px-4 py-3">Produits</th>
-              <th className="px-4 py-3">Ordre</th>
-              <th className="px-4 py-3 text-end">Actions</th>
+              <th className="px-4 py-3 text-start">التصنيف</th>
+              <th className="px-4 py-3">المنتجات</th>
+              <th className="px-4 py-3">الترتيب</th>
+              <th className="px-4 py-3 text-end">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -53,11 +53,11 @@ export default async function CategoriesPage({
                 <td className="px-4 py-3 text-center">{c.sort}</td>
                 <td className="px-4 py-3 text-end">
                   <Link href={`/admin/categories/${c.id}`} className="me-3 text-xs font-bold">
-                    Modifier
+                    تعديل
                   </Link>
                   <form action={deleteCategoryAction} className="inline">
                     <input type="hidden" name="id" value={c.id} />
-                    <button className="text-xs font-bold text-red-600">Supprimer</button>
+                    <button className="text-xs font-bold text-red-600">حذف</button>
                   </form>
                 </td>
               </tr>

@@ -10,8 +10,8 @@ export default async function MenuAdminPage() {
   return (
     <div className="space-y-6">
       <AdminHeader
-        title="Menu principal & logo"
-        subtitle="Ajoutez, supprimez ou réordonnez n'importe quel lien de la barre de navigation."
+        title="القائمة الرئيسية والشعار"
+        subtitle="أضيفوا أو احذفوا أو أعيدوا ترتيب أي رابط في شريط التنقل."
       />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <MenuEditor logoUrl={site.logoUrl} logoText={site.logoText} rows={rows} />

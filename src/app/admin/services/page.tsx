@@ -15,7 +15,7 @@ export default async function ServicesAdminPage({
     <div className="space-y-6">
       <AdminHeader
         title="الخدمات"
-        subtitle={`${services.length} service(s)`}
+        subtitle={`${services.length} خدمة`}
         action={{ href: "/admin/services/new", label: "خدمة جديدة" }}
       />
       <DbBanner failed={db === "error"} />
@@ -32,13 +32,13 @@ export default async function ServicesAdminPage({
                 </p>
               </div>
               <Link href={`/admin/services/${s.id}`} className="text-xs font-bold">
-                Modifier
+                تعديل
               </Link>
             </div>
             <p className="mt-2 line-clamp-2 text-sm text-slate-600">{s.shortFr}</p>
             <form action={deleteServiceAction} className="mt-3">
               <input type="hidden" name="id" value={s.id} />
-              <button className="text-xs font-bold text-red-600">Supprimer</button>
+              <button className="text-xs font-bold text-red-600">حذف</button>
             </form>
           </article>
         ))}

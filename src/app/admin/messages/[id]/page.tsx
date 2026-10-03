@@ -32,10 +32,10 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
           </form>
           <form action={deleteMessageAction}>
             <input type="hidden" name="id" value={message.id} />
-            <button className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700">Supprimer</button>
+            <button className="rounded-lg bg-red-50 px-4 py-2 text-sm font-bold text-red-700">حذف</button>
           </form>
           <Link href="/admin/messages" className="btn btn-outline">
-            Retour
+            رجوع
           </Link>
         </div>
       </article>

@@ -10,7 +10,7 @@ export default async function EditCustomPage({ params }: { params: Promise<{ id:
   if (!page) notFound();
   return (
     <div className="space-y-6">
-      <AdminHeader title={`Page · ${page.titleFr}`} />
+      <AdminHeader title={`صفحة · ${page.titleFr}`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <PageEditor
           id={page.id}

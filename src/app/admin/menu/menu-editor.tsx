@@ -76,7 +76,7 @@ function Fields({
   return (
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
       <label className="block text-xs font-bold">
-        Lien
+        الرابط
         <input
           className="field mt-1"
           value={node.href}
@@ -85,16 +85,16 @@ function Fields({
         />
       </label>
       <label className="block text-xs font-bold">
-        Libellé FR
+        التسمية بالفرنسية
         <input
           className="field mt-1"
           value={node.labelFr}
-          placeholder="Accueil"
+          placeholder="الرئيسية"
           onChange={(e) => onChange({ labelFr: e.target.value })}
         />
       </label>
       <label className="block text-xs font-bold">
-        Libellé AR
+        التسمية بالعربية
         <input
           className="field mt-1"
           dir="rtl"
@@ -104,14 +104,14 @@ function Fields({
         />
       </label>
       <label className="block text-xs font-bold">
-        Visible
+        ظاهر
         <select
           className="field mt-1"
           value={node.visible ? "1" : "0"}
           onChange={(e) => onChange({ visible: e.target.value === "1" })}
         >
-          <option value="1">Oui</option>
-          <option value="0">Non</option>
+          <option value="1">نعم</option>
+          <option value="0">لا</option>
         </select>
       </label>
     </div>
@@ -193,34 +193,34 @@ export function MenuEditor({
       ) : null}
       {state.ok ? (
         <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
-          Menu enregistré. Les changements apparaissent sur /ar et /fr.
+          تم حفظ القائمة. تظهر التغييرات على /ar و /fr.
         </p>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block space-y-1">
-          <span className="text-xs font-bold text-brand-950">Logo (URL image)</span>
+          <span className="text-xs font-bold text-brand-950">رابط صورة الشعار</span>
           <input name="logoUrl" defaultValue={logoUrl} className="field" placeholder="https://…" />
         </label>
         <label className="block space-y-1">
-          <span className="text-xs font-bold text-brand-950">Monogramme</span>
+          <span className="text-xs font-bold text-brand-950">الحروف المختصرة</span>
           <input name="logoText" defaultValue={logoText || "ATC"} className="field" />
         </label>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-extrabold text-brand-950">Menu principal</p>
-          <p className="text-xs text-slate-500">Racine = lien dans la barre. Sous-élément = menu déroulant.</p>
+          <p className="text-sm font-extrabold text-brand-950">القائمة الرئيسية</p>
+          <p className="text-xs text-slate-500">الرئيسي = رابط في الشريط. الفرعي = قائمة منسدلة.</p>
         </div>
         <button type="button" className="btn btn-primary !py-2 !text-xs" onClick={() => setTree((t) => [...t, emptyNode()])}>
-          + Ajouter une racine
+          + إضافة عنصر رئيسي
         </button>
       </div>
 
       {tree.length === 0 ? (
         <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
-          Aucune racine. Cliquez sur « Ajouter une racine ».
+          لا عناصر رئيسية. اضغطوا «إضافة عنصر رئيسي».
         </p>
       ) : null}
 
@@ -229,7 +229,7 @@ export function MenuEditor({
           <li key={root.key} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-brand-950 px-4 py-3 text-white">
                 <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide">
-                  Racine {rootIndex + 1}
+                  رئيسي {rootIndex + 1}
                 </span>
                 <div className="flex flex-wrap gap-1">
                   <button
@@ -253,14 +253,14 @@ export function MenuEditor({
                       patchRoot(rootIndex, { children: [...root.children, emptyNode()] })
                     }
                   >
-                    + Sous-élément
+                    + عنصر فرعي
                   </button>
                   <button
                     type="button"
                     className="rounded-lg bg-red-500/90 px-2 py-1 text-xs font-bold"
                     onClick={() => setTree((t) => t.filter((_, i) => i !== rootIndex))}
                   >
-                    Supprimer la racine
+                    حذف الرئيسي
                   </button>
                 </div>
             </div>
@@ -270,7 +270,7 @@ export function MenuEditor({
 
             <div className="space-y-3 bg-slate-50 p-4">
               {root.children.length === 0 ? (
-                <p className="text-xs text-slate-500">Pas de sous-élément. Utilisez « + Sous-élément » pour un menu déroulant.</p>
+                <p className="text-xs text-slate-500">لا عناصر فرعية. استخدموا «+ عنصر فرعي» للقائمة المنسدلة.</p>
               ) : null}
               <ol className="space-y-3">
                 {root.children.map((child, childIndex) => (
@@ -281,7 +281,7 @@ export function MenuEditor({
                     <span className="absolute start-3 top-3 bottom-3 w-0.5 rounded bg-brand-200" aria-hidden />
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-[11px] font-extrabold uppercase tracking-wide text-brand-700">
-                        Sous-élément {rootIndex + 1}.{childIndex + 1}
+                        فرعي {rootIndex + 1}.{childIndex + 1}
                       </span>
                       <div className="flex gap-1">
                         <button
@@ -311,7 +311,7 @@ export function MenuEditor({
                             })
                           }
                         >
-                          Supprimer
+                          حذف
                         </button>
                       </div>
                     </div>
@@ -330,7 +330,7 @@ export function MenuEditor({
 
       <div className="flex flex-wrap gap-2">
         <button type="button" className="btn btn-outline" onClick={() => setTree((t) => [...t, emptyNode()])}>
-          + Ajouter une racine
+          + إضافة عنصر رئيسي
         </button>
         <Submit />
       </div>

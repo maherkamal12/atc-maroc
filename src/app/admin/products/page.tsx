@@ -29,7 +29,7 @@ export default async function AdminProductsPage({
     <div className="space-y-6">
       <AdminHeader
         title="المنتجات"
-        subtitle={`${total} produit(s) — devis uniquement, jamais de prix.`}
+        subtitle={`${total} منتج — عروض أسعار فقط، دون أسعار.`}
         action={{ href: "/admin/products/new", label: "منتج جديد" }}
       />
       <DbBanner failed={sp.db === "error"} />
@@ -37,7 +37,7 @@ export default async function AdminProductsPage({
       <form className="flex flex-wrap gap-2" method="get">
         <input name="q" defaultValue={sp.q} placeholder="بحث…" className="field max-w-xs" />
         <select name="category" defaultValue={sp.category ?? ""} className="field max-w-xs">
-          <option value="">Toutes les catégories</option>
+          <option value="">كل التصنيفات</option>
           {categories.map((c) => (
             <option key={c.slug} value={c.slug}>
               {c.nameFr} ({counts[c.slug] ?? 0})
@@ -45,33 +45,33 @@ export default async function AdminProductsPage({
           ))}
         </select>
         <button className="btn btn-primary" type="submit">
-          Filtrer
+          تصفية
         </button>
         <Link className="btn btn-outline" href="/admin/products/export">
-          Export CSV
+          تصدير CSV
         </Link>
         <Link className="btn btn-outline" href="/admin/products/import">
-          Import CSV
+          استيراد CSV
         </Link>
       </form>
 
       <form action={bulkProductsAction} className="space-y-3">
         <div className="flex flex-wrap items-end gap-2 rounded-2xl border border-slate-100 bg-white p-3 text-sm">
-          <span className="text-xs font-bold text-slate-500">Sélection :</span>
+          <span className="text-xs font-bold text-slate-500">التحديد:</span>
           <button name="op" value="delete" className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700">
-            Supprimer
+            حذف
           </button>
           <button name="op" value="feature" className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800">
-            Mettre en avant
+            إبراز
           </button>
           <button name="op" value="unfeature" className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold">
-            Retirer mise en avant
+            إلغاء الإبراز
           </button>
           <button name="op" value="stock" className="rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">
-            Disponible
+            متوفر
           </button>
           <button name="op" value="unstock" className="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold">
-            Indisponible
+            غير متوفر
           </button>
           <select name="categorySlug" className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs">
             {categories.map((c) => (
@@ -81,7 +81,7 @@ export default async function AdminProductsPage({
             ))}
           </select>
           <button name="op" value="category" className="rounded-lg bg-brand-950 px-3 py-1.5 text-xs font-bold text-white">
-            Changer catégorie
+            تغيير التصنيف
           </button>
         </div>
 
@@ -90,12 +90,12 @@ export default async function AdminProductsPage({
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-3" />
-                <th className="px-3 py-3 text-start">Image</th>
-                <th className="px-3 py-3 text-start">Produit</th>
-                <th className="px-3 py-3 text-start">Catégorie</th>
-                <th className="px-3 py-3">Stock</th>
-                <th className="px-3 py-3">Avant</th>
-                <th className="px-3 py-3 text-end">Actions</th>
+                <th className="px-3 py-3 text-start">صورة</th>
+                <th className="px-3 py-3 text-start">المنتج</th>
+                <th className="px-3 py-3 text-start">التصنيف</th>
+                <th className="px-3 py-3">المخزون</th>
+                <th className="px-3 py-3">إبراز</th>
+                <th className="px-3 py-3 text-end">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -114,7 +114,7 @@ export default async function AdminProductsPage({
                         <span className="grid h-12 w-12 place-items-center rounded-lg bg-slate-100 text-xs">—</span>
                       )}
                       {dup ? (
-                        <span className="mt-1 block text-[10px] font-bold text-amber-700">image partagée</span>
+                        <span className="mt-1 block text-[10px] font-bold text-amber-700">صورة مشتركة</span>
                       ) : null}
                     </td>
                     <td className="px-3 py-2">
@@ -128,7 +128,7 @@ export default async function AdminProductsPage({
                       <button formAction={toggleProductFlagAction} name="id" value={product.id} className="text-xs font-bold">
                         <input type="hidden" name="field" value="inStock" />
                         <input type="hidden" name="value" value={String(product.inStock)} />
-                        {product.inStock ? "disponible" : "indisponible"}
+                        {product.inStock ? "متوفر" : "غير متوفر"}
                       </button>
                     </td>
                     <td className="px-3 py-2 text-center">
@@ -141,10 +141,10 @@ export default async function AdminProductsPage({
                     <td className="px-3 py-2 text-end">
                       <div className="flex justify-end gap-2">
                         <Link href={`/admin/products/${product.id}`} className="text-xs font-bold text-brand-800">
-                          Modifier
+                          تعديل
                         </Link>
                         <button formAction={duplicateProductAction} name="id" value={product.id} className="text-xs font-bold">
-                          Dupliquer
+                          نسخ
                         </button>
                         <button
                           formAction={deleteProductAction}
@@ -152,7 +152,7 @@ export default async function AdminProductsPage({
                           value={product.id}
                           className="text-xs font-bold text-red-600"
                         >
-                          Supprimer
+                          حذف
                         </button>
                       </div>
                     </td>
@@ -166,15 +166,15 @@ export default async function AdminProductsPage({
 
       {pages > 1 ? (
         <p className="text-sm text-slate-500">
-          Page {page} / {pages}{" "}
+          صفحة {page} / {pages}{" "}
           {page > 1 ? (
             <Link className="font-bold" href={`/admin/products?page=${page - 1}`}>
-              précédent
+              السابق
             </Link>
           ) : null}{" "}
           {page < pages ? (
             <Link className="font-bold" href={`/admin/products?page=${page + 1}`}>
-              suivant
+              التالي
             </Link>
           ) : null}
         </p>

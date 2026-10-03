@@ -12,7 +12,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   if (!product) notFound();
   return (
     <div className="space-y-6">
-      <AdminHeader title={`Modifier · ${product.nameFr}`} />
+      <AdminHeader title={`تعديل · ${product.nameFr}`} />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ProductForm product={product} categories={categories} />
       </div>
