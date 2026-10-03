@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function UploadForm() {
+export function UploadForm({ hint, enabled }: { hint: string; enabled: boolean }) {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
@@ -35,11 +35,9 @@ export function UploadForm() {
   return (
     <form onSubmit={onSubmit} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
       <h2 className="text-sm font-extrabold text-brand-950">Téléverser un fichier</h2>
-      <p className="mt-1 text-xs text-slate-500">
-        Vercel Blob si BLOB_READ_WRITE_TOKEN est défini, sinon stockage local <code>/media</code>.
-      </p>
-      <input type="file" name="file" accept="image/*,.webp,.svg,.pdf" className="mt-3 text-sm" required />
-      <button className="btn btn-primary mt-3" disabled={pending} type="submit">
+      <p className="mt-1 text-xs text-slate-500">{hint}</p>
+      <input type="file" name="file" accept="image/*,.webp,.svg,.pdf" className="mt-3 text-sm" required disabled={!enabled} />
+      <button className="btn btn-primary mt-3" disabled={pending || !enabled} type="submit">
         {pending ? "Envoi…" : "Envoyer dans la médiathèque"}
       </button>
       {error ? <p className="mt-2 text-xs font-bold text-red-600">{error}</p> : null}

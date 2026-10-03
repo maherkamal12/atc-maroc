@@ -59,10 +59,34 @@ export async function registerAsset(input: {
   }
 }
 
+function blobToken() {
+  return (process.env.BLOB_READ_WRITE_TOKEN ?? "").trim() || undefined;
+}
+
+function isServerlessFs() {
+  return Boolean(
+    process.env.VERCEL ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.LAMBDA_TASK_ROOT ||
+      process.cwd() === "/var/task",
+  );
+}
+
+export function mediaUploadHint() {
+  if (blobToken()) return "Les fichiers sont envoyés vers Vercel Blob.";
+  if (isServerlessFs()) {
+    return "Sur Vercel, ajoutez BLOB_READ_WRITE_TOKEN (Storage → Blob) pour téléverser. En attendant, enregistrez une URL d'image ci-dessous.";
+  }
+  return "Stockage local /public/media (dev). En production, configurez Vercel Blob.";
+}
+
+export function mediaUploadsEnabled() {
+  return Boolean(blobToken()) || !isServerlessFs();
+}
+
 export async function storeUpload(file: File): Promise<{ url: string } | { error: string }> {
   const filename = `${Date.now()}-${safeName(file.name)}`;
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const token = blobToken();
 
   if (token) {
     try {
@@ -86,9 +110,17 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
     }
   }
 
+  if (isServerlessFs()) {
+    return {
+      error:
+        "Impossible d'écrire dans /public sur Vercel. Créez un store Blob dans le projet Vercel et ajoutez BLOB_READ_WRITE_TOKEN, ou collez une URL d'image.",
+    };
+  }
+
   const dir = path.join(process.cwd(), "public", "media");
   try {
     await mkdir(dir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(path.join(dir, filename), buffer);
     const url = `/media/${filename}`;
     await registerAsset({

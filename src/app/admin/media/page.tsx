@@ -2,7 +2,7 @@ import { AdminHeader } from "../_ui";
 import { ActionForm } from "../_form";
 import { Field } from "../_ui";
 import { registerMediaUrlAction, replaceMediaAction } from "../catalog-actions";
-import { listLibrary } from "@/lib/media";
+import { listLibrary, mediaUploadHint, mediaUploadsEnabled } from "@/lib/media";
 import { MediaLibrary } from "./library-client";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +23,12 @@ export default async function MediaPage({
         subtitle={`${items.length} fichier(s) · ${uploads} en stockage. Recherche, aperçu, copie d'URL, nettoyage des inutilisés.`}
       />
 
-      <MediaLibrary items={items} error={sp.error} />
+      <MediaLibrary
+        items={items}
+        error={sp.error}
+        uploadHint={mediaUploadHint()}
+        uploadsEnabled={mediaUploadsEnabled()}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">

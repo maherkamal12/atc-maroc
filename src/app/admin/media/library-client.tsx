@@ -16,9 +16,13 @@ function formatSize(bytes: number) {
 export function MediaLibrary({
   items,
   error,
+  uploadHint,
+  uploadsEnabled,
 }: {
   items: LibraryItem[];
   error?: string;
+  uploadHint: string;
+  uploadsEnabled: boolean;
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "unused" | "used" | "uploads">("all");
@@ -60,7 +64,7 @@ export function MediaLibrary({
         </p>
       ) : null}
 
-      <UploadForm />
+      <UploadForm hint={uploadHint} enabled={uploadsEnabled} />
 
       <div className="flex flex-wrap items-end gap-2 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
         <label className="block min-w-[14rem] flex-1 text-xs font-bold">
