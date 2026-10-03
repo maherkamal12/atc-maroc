@@ -21,9 +21,24 @@ const globalForDb = globalThis as typeof globalThis & {
   __arenaNextJsPostgresqlDegradedUntil?: number;
 };
 
+/**
+ * Connection string, accepting the variable names used by the hosting
+ * integrations: `DATABASE_URL` (Neon, Vercel + Neon, Supabase…), `POSTGRES_URL`
+ * and `POSTGRES_PRISMA_URL` (older Vercel Postgres / Neon integrations).
+ * Whichever one your project has, the app finds it.
+ */
+export function databaseUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    undefined
+  );
+}
+
 /** True when a Postgres connection string is configured. */
 export function isDatabaseConfigured(): boolean {
-  return Boolean(process.env.DATABASE_URL);
+  return Boolean(databaseUrl());
 }
 
 function degradedUntil(): number {
@@ -82,7 +97,7 @@ export function normalizeConnectionString(raw: string): string {
 
 /** Redacted `host/database` of the configured database, for logs and admin UI. */
 export function databaseTarget(): string | null {
-  const raw = process.env.DATABASE_URL;
+  const raw = databaseUrl();
   if (!raw) return null;
   try {
     const url = new URL(raw);
@@ -93,16 +108,16 @@ export function databaseTarget(): string | null {
 }
 
 function initDb(): Database {
-  const databaseUrl = process.env.DATABASE_URL;
+  const url = databaseUrl();
 
-  if (!databaseUrl) {
+  if (!url) {
     throw new Error("DATABASE_URL is required");
   }
 
   let pool = globalForDb.__arenaNextJsPostgresqlPool;
   if (!pool) {
     pool = new Pool({
-      connectionString: normalizeConnectionString(databaseUrl),
+      connectionString: normalizeConnectionString(url),
       application_name: "atc-maroc",
       // Never let a slow or unreachable database hang a page render: the data
       // layer falls back to the bundled catalog as soon as this fails.

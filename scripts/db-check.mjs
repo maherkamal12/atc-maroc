@@ -16,7 +16,10 @@ const EXPECTED_TABLES = [
   "order_items",
 ];
 
-const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+const url =
+  process.env.DATABASE_URL ??
+  process.env.POSTGRES_URL ??
+  process.env.POSTGRES_PRISMA_URL;
 
 if (!url) {
   console.error("✗ DATABASE_URL is not set.");
