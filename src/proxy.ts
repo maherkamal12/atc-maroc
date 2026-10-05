@@ -5,11 +5,13 @@ const LOCALES = ["ar", "fr"];
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/_next")
-  ) {
+  if (pathname.startsWith("/admin")) {
+    const headers = new Headers(request.headers);
+    headers.set("x-locale", "ar");
+    return NextResponse.next({ request: { headers } });
+  }
+
+  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 

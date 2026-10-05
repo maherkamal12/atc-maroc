@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuote } from "./cart-provider";
 import type { Locale } from "@/lib/site";
-import { otherLocale, site } from "@/lib/site";
+import { otherLocale } from "@/lib/site";
+import type { ResolvedSite } from "@/lib/cms";
 
 export type HeaderNavItem = {
   href: string;
@@ -15,6 +16,7 @@ export type HeaderNavItem = {
 
 type Props = {
   locale: Locale;
+  contact: ResolvedSite;
   items: HeaderNavItem[];
   labels: {
     home: string;
@@ -27,7 +29,8 @@ type Props = {
   };
 };
 
-export function SiteHeader({ locale, items, labels }: Props) {
+export function SiteHeader({ locale, contact, items, labels }: Props) {
+  const site = contact;
   const pathname = usePathname() || `/${locale}`;
   const router = useRouter();
   const { count } = useQuote();
@@ -112,9 +115,18 @@ export function SiteHeader({ locale, items, labels }: Props) {
       >
         <div className="wrap flex items-center gap-4 py-3">
           <Link href={`/${locale}`} className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-800 to-brand-600 text-lg font-black text-white shadow-lg">
-              ATC
-            </span>
+            {site.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={site.logoUrl}
+                alt={site.logoText || site.nameFr}
+                className="h-11 w-auto max-w-[9rem] object-contain"
+              />
+            ) : (
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-800 to-brand-600 text-lg font-black text-white shadow-lg">
+                {site.logoText || "ATC"}
+              </span>
+            )}
             <span className="leading-tight">
               <span className="block text-[15px] font-extrabold text-brand-950">
                 {locale === "fr" ? site.nameFr : site.nameAr}

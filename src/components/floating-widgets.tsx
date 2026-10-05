@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { site, type Locale } from "@/lib/site";
+import { type Locale } from "@/lib/site";
 
 export function FloatingWidgets({
   locale,
+  whatsapp,
   labels,
 }: {
   locale: Locale;
+  whatsapp: string;
   labels: { whatsapp: string; cookieText: string; cookieMore: string; cookieAccept: string };
 }) {
   const [showCookies, setShowCookies] = useState(false);
@@ -33,7 +35,7 @@ export function FloatingWidgets({
   return (
     <>
       <a
-        href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`}
+        href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`}
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-5 end-5 z-40 flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-[0_12px_30px_-10px_rgba(37,211,102,0.9)] transition hover:scale-105"

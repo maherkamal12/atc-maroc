@@ -69,6 +69,7 @@ export const posts = pgTable("posts", {
   tagFr: varchar("tag_fr", { length: 80 }).notNull().default(""),
   readMinutes: integer("read_minutes").notNull().default(4),
   publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+  published: boolean("published").notNull().default(true),
 });
 
 export const contactMessages = pgTable("contact_messages", {
@@ -80,6 +81,7 @@ export const contactMessages = pgTable("contact_messages", {
   message: text("message").notNull().default(""),
   locale: varchar("locale", { length: 5 }).notNull().default("ar"),
   isRead: boolean("is_read").notNull().default(false),
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -96,6 +98,7 @@ export const orders = pgTable("orders", {
   itemsCount: integer("items_count").notNull().default(0),
   status: varchar("status", { length: 24 }).notNull().default("new"),
   locale: varchar("locale", { length: 5 }).notNull().default("ar"),
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -111,10 +114,81 @@ export const orderItems = pgTable("order_items", {
   quantity: integer("quantity").notNull().default(1),
 });
 
+/** Key/value site-wide settings (contact, SEO, social). Database wins over `src/lib/site.ts`. */
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 120 }).notNull().unique(),
+  value: text("value").notNull().default(""),
+});
+
+/** Bilingual page copy. Empty values fall back to the hardcoded dictionary. */
+export const contentBlocks = pgTable("content_blocks", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 160 }).notNull().unique(),
+  valueAr: text("value_ar").notNull().default(""),
+  valueFr: text("value_fr").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type Service = typeof services.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type Order = typeof orders.$inferSelect;
+/** Public header main menu. Empty table → fallback to `navLinks` in site.ts. */
+export const navItems = pgTable("nav_items", {
+  id: serial("id").primaryKey(),
+  href: varchar("href", { length: 240 }).notNull(),
+  labelAr: text("label_ar").notNull(),
+  labelFr: text("label_fr").notNull(),
+  parentHref: varchar("parent_href", { length: 240 }).notNull().default(""),
+  sort: integer("sort").notNull().default(0),
+  visible: boolean("visible").notNull().default(true),
+});
+
+/** Custom marketing pages created in /admin/pages (same layout as Design / À propos). */
+export const customPages = pgTable("custom_pages", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 160 }).notNull().unique(),
+  titleAr: text("title_ar").notNull(),
+  titleFr: text("title_fr").notNull(),
+  subtitleAr: text("subtitle_ar").notNull().default(""),
+  subtitleFr: text("subtitle_fr").notNull().default(""),
+  heroImage: text("hero_image").notNull().default(""),
+  /** JSON array of PageSection */
+  sections: text("sections").notNull().default("[]"),
+  published: boolean("published").notNull().default(true),
+  sort: integer("sort").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Uploaded / registered files for the media library. */
+export const mediaAssets = pgTable("media_assets", {
+  id: serial("id").primaryKey(),
+  url: text("url").notNull().unique(),
+  pathname: text("pathname").notNull().default(""),
+  filename: text("filename").notNull().default(""),
+  contentType: varchar("content_type", { length: 120 }).notNull().default(""),
+  size: integer("size").notNull().default(0),
+  storage: varchar("storage", { length: 20 }).notNull().default("url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type OrderItem = typeof orderItems.$inferSelect;
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type NavItem = typeof navItems.$inferSelect;
+export type CustomPage = typeof customPages.$inferSelect;
+/** Back-office accounts: manager (full) or user (CMS without user admin). */
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 80 }).notNull().unique(),
+  displayName: text("display_name").notNull().default(""),
+  role: varchar("role", { length: 20 }).notNull().default("user"),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type MediaAsset = typeof mediaAssets.$inferSelect;
+export type AdminUser = typeof adminUsers.$inferSelect;

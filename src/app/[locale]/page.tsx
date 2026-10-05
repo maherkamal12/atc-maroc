@@ -15,8 +15,8 @@ import {
   serviceTitle,
 } from "@/lib/data";
 import { t } from "@/lib/i18n";
-import { formatDate, isLocale, site, type Locale } from "@/lib/site";
-import { heroImages } from "@/db/seed-data";
+import { formatDate, isLocale, type Locale } from "@/lib/site";
+import { getBlock, getResolvedSite } from "@/lib/cms";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -27,35 +27,46 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale: Locale = raw;
   const tr = t(locale);
 
-  const [services, featured, posts] = await Promise.all([
-    getServices(),
-    getProducts({ featured: true, limit: 8 }),
-    getPosts(3),
-  ]);
+  const [services, featured, posts, info, heroTitle1, heroSub1, heroTitle2, heroSub2, heroTitle3, heroSub3, img1, img2, img3] =
+    await Promise.all([
+      getServices(),
+      getProducts({ featured: true, limit: 8 }),
+      getPosts(3),
+      getResolvedSite(),
+      getBlock("home.heroTitle1", locale),
+      getBlock("home.heroSub1", locale),
+      getBlock("home.heroTitle2", locale),
+      getBlock("home.heroSub2", locale),
+      getBlock("home.heroTitle3", locale),
+      getBlock("home.heroSub3", locale),
+      getBlock("home.hero1.image", locale),
+      getBlock("home.hero2.image", locale),
+      getBlock("home.hero3.image", locale),
+    ]);
 
   const slides = [
     {
-      image: heroImages.solar,
-      title: tr.heroTitle2,
-      subtitle: tr.heroSub2,
+      image: img2 || info.heroSolar,
+      title: heroTitle2,
+      subtitle: heroSub2,
       ctaLabel: tr.shopNow,
       ctaHref: `/${locale}/products?category=energie-solaire`,
       secondaryLabel: locale === "fr" ? "Nos services" : "خدماتنا",
       secondaryHref: `/${locale}/services`,
     },
     {
-      image: heroImages.electrical,
-      title: tr.heroTitle1,
-      subtitle: tr.heroSub1,
+      image: img1 || info.heroElectrical,
+      title: heroTitle1,
+      subtitle: heroSub1,
       ctaLabel: tr.ctaButton,
       ctaHref: `/${locale}/contact`,
       secondaryLabel: locale === "fr" ? "En savoir plus" : "اعرف المزيد",
       secondaryHref: `/${locale}/about`,
     },
     {
-      image: heroImages.interior,
-      title: tr.heroTitle3,
-      subtitle: tr.heroSub3,
+      image: img3 || info.heroInterior,
+      title: heroTitle3,
+      subtitle: heroSub3,
       ctaLabel: locale === "fr" ? "Design et décoration" : "التصميم والتزيين",
       ctaHref: `/${locale}/design`,
       secondaryLabel: locale === "fr" ? "Nos produits" : "منتجاتنا",
@@ -178,8 +189,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   ? "Devis gratuit et visite technique sur site"
                   : "عرض سعر مجاني وزيارة تقنية للموقع"}
               </p>
-              <a href={`tel:${site.phone}`} className="btn btn-primary mt-4">
-                📞 {site.phoneDisplay}
+              <a href={`tel:${info.phone}`} className="btn btn-primary mt-4">
+                📞 {info.phoneDisplay}
               </a>
             </div>
           </div>
@@ -200,9 +211,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              { title: tr.designTitle1, text: tr.designText1, image: heroImages.interior, icon: "🛋️" },
-              { title: tr.designTitle2, text: tr.designText2, image: services[6]?.image ?? heroImages.solar, icon: "💡" },
-              { title: tr.designTitle3, text: tr.designText3, image: services[5]?.image ?? heroImages.electrical, icon: "🏛️" },
+              { title: tr.designTitle1, text: tr.designText1, image: info.heroInterior, icon: "🛋️" },
+              { title: tr.designTitle2, text: tr.designText2, image: services[6]?.image ?? info.heroSolar, icon: "💡" },
+              { title: tr.designTitle3, text: tr.designText3, image: services[5]?.image ?? info.heroElectrical, icon: "🏛️" },
             ].map((card) => (
               <div key={card.title} className="card overflow-hidden">
                 <div className="relative h-44 overflow-hidden">
@@ -334,12 +345,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <Link href={`/${locale}/contact`} className="btn btn-primary">
               {tr.ctaButton}
             </Link>
-            <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noreferrer" className="btn btn-outline">
+            <a href={`https://wa.me/${info.whatsapp}`} target="_blank" rel="noreferrer" className="btn btn-outline">
               WhatsApp
             </a>
           </div>
           <p className="mt-2 text-xs text-white/60">
-            {locale === "fr" ? site.addressFr : site.addressAr}
+            {locale === "fr" ? info.addressFr : info.addressAr}
           </p>
         </div>
       </section>
