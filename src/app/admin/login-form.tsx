@@ -26,13 +26,7 @@ function SubmitButton() {
   );
 }
 
-export function LoginForm({
-  showDefaultHint,
-  productionWarning,
-}: {
-  showDefaultHint: boolean;
-  productionWarning?: boolean;
-}) {
+export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
   const [state, formAction] = useActionState(login, initialState);
   const [visible, setVisible] = useState(false);
 
@@ -121,12 +115,6 @@ export function LoginForm({
             <p className="text-[11px] font-extrabold tracking-[0.2em] text-accent-600">ADMIN</p>
             <h2 className="mt-1 text-2xl font-black text-brand-950">تسجيل الدخول</h2>
             <p className="mt-1.5 text-sm text-slate-500">أدخلوا بيانات الحساب للمتابعة إلى المكتب الخلفي.</p>
-
-            {productionWarning ? (
-              <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-                كلمة المرور الافتراضية مستخدمة في الإنتاج. عيّنوا حساب مدير جديد من قسم المستخدمين.
-              </p>
-            ) : null}
 
             <label className="mt-7 mb-1.5 block text-xs font-extrabold text-brand-950" htmlFor="username">
               اسم المستخدم
