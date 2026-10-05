@@ -54,7 +54,7 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
         }}
       />
 
-      <section className="relative z-10 hidden flex-col justify-between p-12 lg:flex xl:p-16">
+      <section className="relative z-10 hidden flex-col justify-center p-12 lg:flex xl:p-16">
         <div>
           <div className="inline-flex items-center gap-3">
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white text-sm font-black text-brand-950 shadow-lg">
@@ -69,31 +69,7 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
             منصة إدارة المحتوى
             <span className="mt-2 block text-accent-400">للطاقة الشمسية والتجهيزات.</span>
           </h1>
-          <p className="mt-5 max-w-md text-sm leading-7 text-white/70">
-            الكتالوج، الطلبات، الرسائل، الصفحات والوسائط — من مكان واحد، بالعربية، دون أسعار على الموقع.
-          </p>
-          <ul className="mt-10 grid max-w-md gap-3 text-sm">
-            {[
-              ["كتالوج ثنائي اللغة", "منتجات وخدمات وتصنيفات"],
-              ["عروض الأسعار", "طلبات الزبائن دون مبالغ"],
-              ["محتوى الموقع", "صفحات، قائمة، شعار ووسائط"],
-            ].map(([title, hint]) => (
-              <li
-                key={title}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm"
-              >
-                <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent-500/20 text-[11px] font-black text-accent-400">
-                  ✓
-                </span>
-                <span>
-                  <span className="block font-bold">{title}</span>
-                  <span className="text-xs text-white/50">{hint}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
-        <p className="text-[11px] font-semibold text-white/40">جلسة آمنة · ٨ ساعات · وصول مقيّد للفريق</p>
       </section>
 
       <section className="relative z-10 flex min-h-screen items-center justify-center p-5 sm:p-8">
@@ -114,7 +90,6 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
           >
             <p className="text-[11px] font-extrabold tracking-[0.2em] text-accent-600">ADMIN</p>
             <h2 className="mt-1 text-2xl font-black text-brand-950">تسجيل الدخول</h2>
-            <p className="mt-1.5 text-sm text-slate-500">أدخلوا بيانات الحساب للمتابعة إلى المكتب الخلفي.</p>
 
             <label className="mt-7 mb-1.5 block text-xs font-extrabold text-brand-950" htmlFor="username">
               اسم المستخدم
