@@ -28,12 +28,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   if (!authed) {
     return (
-      <div dir="rtl" lang="ar" className="grid min-h-screen place-items-center bg-brand-950 px-4">
-        <LoginForm
-          showDefaultHint={process.env.NODE_ENV !== "production" && usingDefault}
-          productionWarning={process.env.NODE_ENV === "production" && usingDefault}
-        />
-      </div>
+      <LoginForm
+        showDefaultHint={process.env.NODE_ENV !== "production" && usingDefault}
+        productionWarning={process.env.NODE_ENV === "production" && usingDefault}
+      />
     );
   }
 
