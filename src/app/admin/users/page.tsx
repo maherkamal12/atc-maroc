@@ -30,11 +30,11 @@ export default async function AdminUsersPage({
         <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <label className="block text-xs font-bold">
             اسم المستخدم
-            <input name="username" className="field mt-1" required placeholder="karim" autoComplete="off" />
+            <input name="username" dir="ltr" className="field mt-1" required placeholder="karim" autoComplete="off" />
           </label>
           <label className="block text-xs font-bold">
             الاسم الظاهر
-            <input name="displayName" className="field mt-1" placeholder="كريم" />
+            <input name="displayName" dir="auto" className="field mt-1" placeholder="كريم" />
           </label>
           <label className="block text-xs font-bold">
             الدور
@@ -45,7 +45,7 @@ export default async function AdminUsersPage({
           </label>
           <label className="block text-xs font-bold">
             كلمة المرور
-            <input name="password" type="password" className="field mt-1" required minLength={4} autoComplete="new-password" />
+            <input name="password" type="password" dir="ltr" className="field mt-1" required minLength={4} autoComplete="new-password" />
           </label>
         </div>
         <button className="btn btn-primary mt-4" type="submit">
@@ -87,6 +87,7 @@ export default async function AdminUsersPage({
                       <input
                         name="password"
                         type="password"
+                        dir="ltr"
                         className="field !py-1.5 text-xs"
                         placeholder="••••••••"
                         minLength={4}

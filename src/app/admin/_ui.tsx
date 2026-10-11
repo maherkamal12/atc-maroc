@@ -52,7 +52,7 @@ export function Field({
   required,
   textarea,
   hint,
-  dir,
+  dir = "ltr",
 }: {
   label: string;
   name: string;

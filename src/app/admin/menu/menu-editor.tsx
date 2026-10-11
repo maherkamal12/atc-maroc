@@ -11,7 +11,7 @@ function Submit() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn btn-primary" disabled={pending}>
-      {pending ? "جاري الحفظ…" : "حفظ القائمة والشعار"}
+      {pending ? "جاري الحفظ…" : "حفظ القائمة"}
     </button>
   );
 }
@@ -79,6 +79,7 @@ function Fields({
         الرابط
         <input
           className="field mt-1"
+          dir="ltr"
           value={node.href}
           placeholder={placeholderHref}
           onChange={(e) => onChange({ href: e.target.value })}
@@ -88,8 +89,9 @@ function Fields({
         التسمية بالفرنسية
         <input
           className="field mt-1"
+          dir="ltr"
           value={node.labelFr}
-          placeholder="الرئيسية"
+          placeholder="Accueil"
           onChange={(e) => onChange({ labelFr: e.target.value })}
         />
       </label>
@@ -118,15 +120,7 @@ function Fields({
   );
 }
 
-export function MenuEditor({
-  logoUrl,
-  logoText,
-  rows,
-}: {
-  logoUrl: string;
-  logoText: string;
-  rows: MenuRow[];
-}) {
+export function MenuEditor({ rows }: { rows: MenuRow[] }) {
   const [state, formAction] = useActionState(saveNavAction, initial);
   const [tree, setTree] = useState<Node[]>(() => rowsToTree(rows));
 
@@ -196,17 +190,6 @@ export function MenuEditor({
           تم حفظ القائمة. تظهر التغييرات على /ar و /fr.
         </p>
       ) : null}
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="block space-y-1">
-          <span className="text-xs font-bold text-brand-950">رابط صورة الشعار</span>
-          <input name="logoUrl" defaultValue={logoUrl} className="field" placeholder="https://…" />
-        </label>
-        <label className="block space-y-1">
-          <span className="text-xs font-bold text-brand-950">الحروف المختصرة</span>
-          <input name="logoText" defaultValue={logoText || "ATC"} className="field" />
-        </label>
-      </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>

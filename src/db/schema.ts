@@ -1,5 +1,6 @@
 import {
   boolean,
+  customType,
   integer,
   pgTable,
   serial,
@@ -7,6 +8,10 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 export const services = pgTable("services", {
   id: serial("id").primaryKey(),
@@ -172,6 +177,7 @@ export const mediaAssets = pgTable("media_assets", {
   contentType: varchar("content_type", { length: 120 }).notNull().default(""),
   size: integer("size").notNull().default(0),
   storage: varchar("storage", { length: 20 }).notNull().default("url"),
+  data: bytea("data"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

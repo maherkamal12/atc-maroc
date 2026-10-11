@@ -33,7 +33,7 @@ export default async function ContentPage() {
                           <input type="hidden" name="valueAr" value={url} />
                           <label className="mt-2 block space-y-1">
                             <span className="text-xs font-bold">URL de l&apos;image</span>
-                            <input name="valueFr" className="field" defaultValue={url} />
+                            <input name="valueFr" dir="ltr" className="field" defaultValue={url} />
                           </label>
                           {url ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -52,6 +52,7 @@ export default async function ContentPage() {
                             <textarea
                               name="valueFr"
                               className="field min-h-24"
+                              dir="ltr"
                               defaultValue={stored?.valueFr || fb.fr}
                             />
                           </label>

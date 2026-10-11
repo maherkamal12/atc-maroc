@@ -5,6 +5,7 @@ import { QuoteProvider } from "@/components/cart-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FloatingWidgets } from "@/components/floating-widgets";
+import { LocaleDirectionSync } from "@/components/locale-direction-sync";
 import { getCategories, getServices } from "@/lib/data";
 import { t } from "@/lib/i18n";
 import { getBlock, getHeaderNav, getResolvedSite } from "@/lib/cms";
@@ -52,6 +53,7 @@ export default async function LocaleLayout({
 
   return (
     <QuoteProvider>
+      <LocaleDirectionSync />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-[100] focus:rounded-lg focus:bg-brand-900 focus:px-4 focus:py-2 focus:text-white"

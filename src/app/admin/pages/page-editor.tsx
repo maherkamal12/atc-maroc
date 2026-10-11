@@ -70,14 +70,14 @@ export function PageEditor({
       ) : null}
       {state.ok ? (
         <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
-          تم حفظ الصفحة. أضيفوها للقائمة من «القائمة والشعار» (الرابط <code>/p/المعرّف</code>).
+          تم حفظ الصفحة. أضيفوها للقائمة من «القائمة الرئيسية» (الرابط <code>/p/المعرّف</code>).
         </p>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block text-xs font-bold">
           العنوان بالفرنسية
-          <input name="titleFr" required defaultValue={titleFr} className="field mt-1" />
+          <input name="titleFr" required defaultValue={titleFr} className="field mt-1" dir="ltr" />
         </label>
         <label className="block text-xs font-bold">
           العنوان بالعربية
@@ -85,16 +85,16 @@ export function PageEditor({
         </label>
         <label className="block text-xs font-bold">
           المعرّف
-          <input name="slug" defaultValue={slug} className="field mt-1" placeholder="our-team" />
+          <input name="slug" defaultValue={slug} className="field mt-1" placeholder="our-team" dir="ltr" />
           <span className="mt-1 block font-normal text-slate-400">الرابط: /ar/p/المعرّف و /fr/p/المعرّف</span>
         </label>
         <label className="block text-xs font-bold">
           صورة الرأس (رابط)
-          <input name="heroImage" defaultValue={heroImage} className="field mt-1" />
+          <input name="heroImage" defaultValue={heroImage} className="field mt-1" dir="ltr" />
         </label>
         <label className="block text-xs font-bold md:col-span-2">
           العنوان الفرعي بالفرنسية
-          <textarea name="subtitleFr" defaultValue={subtitleFr} className="field mt-1 min-h-20" />
+          <textarea name="subtitleFr" defaultValue={subtitleFr} className="field mt-1 min-h-20" dir="ltr" />
         </label>
         <label className="block text-xs font-bold md:col-span-2">
           العنوان الفرعي بالعربية
@@ -105,7 +105,7 @@ export function PageEditor({
         </label>
         <label className="block text-xs font-bold">
           الترتيب
-          <input name="sort" type="number" defaultValue={sort ?? 0} className="field mt-1" />
+          <input name="sort" type="number" defaultValue={sort ?? 0} className="field mt-1" dir="ltr" />
         </label>
       </div>
 
@@ -155,6 +155,7 @@ export function PageEditor({
                 العنوان بالفرنسية
                 <input
                   className="field mt-1"
+                  dir="ltr"
                   value={block.titleFr}
                   onChange={(e) =>
                     setBlocks((list) =>
@@ -180,6 +181,7 @@ export function PageEditor({
                 النص بالفرنسية
                 <textarea
                   className="field mt-1 min-h-24"
+                  dir="ltr"
                   value={block.bodyFr}
                   onChange={(e) =>
                     setBlocks((list) =>
@@ -206,6 +208,7 @@ export function PageEditor({
                   رابط الصورة
                   <input
                     className="field mt-1"
+                    dir="ltr"
                     value={block.image}
                     onChange={(e) =>
                       setBlocks((list) =>
