@@ -45,6 +45,7 @@ const fallbackProducts: Product[] = generatedProducts.map((item, index) => ({
 const fallbackPosts: Post[] = postSeed.map((item, index) => ({
   id: index + 1,
   publishedAt: new Date(Date.now() - index * 9 * 86400_000),
+  published: true,
   ...item,
 }));
 
@@ -317,7 +318,11 @@ export async function getPosts(limit?: number): Promise<Post[]> {
   await ensureSeeded();
   if (!canQueryDatabase()) return limit ? fallbackPosts.slice(0, limit) : fallbackPosts;
   try {
-    const base = db.select().from(posts).orderBy(desc(posts.publishedAt));
+    const base = db
+      .select()
+      .from(posts)
+      .where(eq(posts.published, true))
+      .orderBy(desc(posts.publishedAt));
     const rows = limit ? await base.limit(limit) : await base;
     if (rows.length) return rows;
     throw new Error("empty");
@@ -374,11 +379,17 @@ async function insertMessage(input: {
   return row;
 }
 
-export async function listMessages(): Promise<ContactMessage[]> {
+export async function listMessages(opts?: { archived?: boolean }): Promise<ContactMessage[]> {
   await ensureSeeded();
   if (!canQueryDatabase()) return [];
   try {
-    return await db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt)).limit(200);
+    const archived = opts?.archived === true;
+    return await db
+      .select()
+      .from(contactMessages)
+      .where(eq(contactMessages.archived, archived))
+      .orderBy(desc(contactMessages.createdAt))
+      .limit(200);
   } catch (error) {
     markDatabaseUnavailable("listMessages", error);
     return [];
@@ -455,11 +466,17 @@ async function insertOrder(input: NewOrderInput) {
   return { order, itemsCount };
 }
 
-export async function listOrders(): Promise<Order[]> {
+export async function listOrders(opts?: { archived?: boolean }): Promise<Order[]> {
   await ensureSeeded();
   if (!canQueryDatabase()) return [];
   try {
-    return await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(200);
+    const archived = opts?.archived === true;
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.archived, archived))
+      .orderBy(desc(orders.createdAt))
+      .limit(200);
   } catch (error) {
     markDatabaseUnavailable("listOrders", error);
     return [];

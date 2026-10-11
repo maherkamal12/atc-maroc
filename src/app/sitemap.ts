@@ -1,16 +1,18 @@
 import type { MetadataRoute } from "next";
 import { getCategories, getPosts, getProducts, getServices } from "@/lib/data";
+import { listPublishedPages } from "@/lib/pages";
 import { locales } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://atc-maroc.com").replace(/\/$/, "");
-  const [services, categories, products, posts] = await Promise.all([
+  const [services, categories, products, posts, extraPages] = await Promise.all([
     getServices(),
     getCategories(),
     getProducts(),
     getPosts(),
+    listPublishedPages(),
   ]);
 
   const staticPaths = ["", "/about", "/services", "/products", "/blog", "/design", "/contact", "/cart"];
@@ -35,6 +37,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
     for (const post of posts) {
       entries.push({ url: `${base}/${locale}/blog/${post.slug}`, priority: 0.5 });
+    }
+    for (const page of extraPages) {
+      entries.push({ url: `${base}/${locale}/p/${page.slug}`, priority: 0.6 });
     }
   }
 

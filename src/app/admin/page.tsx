@@ -7,33 +7,33 @@ export const dynamic = "force-dynamic";
 function databaseBadge(status: Awaited<ReturnType<typeof databaseStatus>>) {
   if (!status.configured) {
     return {
-      label: "Non configurée",
+      label: "غير مُعدّة",
       dot: "bg-slate-400",
       chip: "bg-slate-100 text-slate-600",
-      hint: "Ajoutez DATABASE_URL (Neon) dans les variables d'environnement puis redéployez. En attendant, les messages et commandes ne sont pas enregistrés.",
+      hint: "أضيفوا DATABASE_URL (Neon) في متغيرات البيئة ثم أعيدوا النشر. إلى ذلك الحين لن تُحفظ الرسائل والطلبات.",
     };
   }
   if (!status.reachable) {
     return {
-      label: "Injoignable",
+      label: "غير متصلة",
       dot: "bg-red-500",
       chip: "bg-red-50 text-red-700",
-      hint: `DATABASE_URL est définie mais la connexion échoue${status.error ? ` (${status.error})` : ""}. Vérifiez le mot de passe et le nom d'hôte Neon.`,
+      hint: `DATABASE_URL موجودة لكن الاتصال يفشل${status.error ? ` (${status.error})` : ""}. تحققوا من كلمة المرور وعنوان Neon.`,
     };
   }
   if (status.schema !== "ready") {
     return {
-      label: "Tables manquantes",
+      label: "جداول ناقصة",
       dot: "bg-amber-500",
       chip: "bg-amber-50 text-amber-700",
-      hint: `La connexion fonctionne mais les tables ${status.missingTables.join(", ")} n'existent pas. Lancez « npm run db:push » (ou autorisez la création automatique avec DATABASE_AUTO_MIGRATE).`,
+      hint: `الاتصال يعمل لكن الجداول ${status.missingTables.join(", ")} غير موجودة. نفّذوا npm run db:push أو اتركوا الإنشاء التلقائي.`,
     };
   }
   return {
-    label: "Connectée",
+      label: "متصلة",
     dot: "bg-emerald-500",
     chip: "bg-emerald-50 text-emerald-700",
-    hint: `${status.target ?? "base"} · ${status.rows?.messages ?? 0} message(s), ${status.rows?.orders ?? 0} commande(s), ${status.rows?.products ?? 0} produit(s).`,
+    hint: `${status.target ?? "قاعدة"} · ${status.rows?.messages ?? 0} رسالة، ${status.rows?.orders ?? 0} طلب، ${status.rows?.products ?? 0} منتج.`,
   };
 }
 
@@ -48,24 +48,24 @@ export default async function AdminDashboard() {
   const badge = databaseBadge(db);
 
   const cards = [
-    { label: "Messages", value: stats.messages, hint: `${stats.unread} non lus`, href: "/admin/messages" },
-    { label: "Commandes", value: stats.orders, hint: "toutes status", href: "/admin/orders" },
-    { label: "Produits", value: stats.products, hint: "catalogue importé", href: "/ar/products" },
-    { label: "Articles devis", value: stats.orderItems, hint: "lignes de devis", href: "/admin/orders" },
+    { label: "الرسائل", value: stats.messages, hint: `${stats.unread} غير مقروءة`, href: "/admin/messages" },
+    { label: "الطلبات", value: stats.orders, hint: "كل الحالات", href: "/admin/orders" },
+    { label: "المنتجات", value: stats.products, hint: "الكتالوج", href: "/admin/products" },
+    { label: "بنود العروض", value: stats.orderItems, hint: "أسطر الطلب", href: "/admin/orders" },
   ];
 
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-extrabold text-brand-950">Tableau de bord</h1>
+        <h1 className="text-2xl font-extrabold text-brand-950">لوحة التحكم</h1>
         <p className="text-sm text-slate-500">
-          Suivi des demandes de contact et des commandes du site ATC.
+          متابعة رسائل التواصل وطلبات عروض الأسعار.
         </p>
       </header>
 
       <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
         <span className={`h-2.5 w-2.5 rounded-full ${badge.dot}`} aria-hidden />
-        <h2 className="text-sm font-extrabold text-brand-950">Base de données</h2>
+        <h2 className="text-sm font-extrabold text-brand-950">قاعدة البيانات</h2>
         <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${badge.chip}`}>
           {badge.label}
         </span>
@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-extrabold text-brand-950">Derniers messages</h2>
+          <h2 className="text-base font-extrabold text-brand-950">آخر الرسائل</h2>
           {messages.length ? (
             <ul className="mt-4 divide-y divide-slate-100">
               {messages.slice(0, 6).map((message) => (
@@ -105,18 +105,18 @@ export default async function AdminDashboard() {
                       message.isRead ? "bg-slate-100 text-slate-500" : "bg-accent-500/15 text-accent-700"
                     }`}
                   >
-                    {message.isRead ? "lu" : "nouveau"}
+                    {message.isRead ? "مقروء" : "جديد"}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-sm text-slate-500">Aucun message pour le moment.</p>
+            <p className="mt-4 text-sm text-slate-500">لا رسائل حالياً.</p>
           )}
         </section>
 
         <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-extrabold text-brand-950">Dernières commandes</h2>
+          <h2 className="text-base font-extrabold text-brand-950">آخر الطلبات</h2>
           {orders.length ? (
             <>
               <ul className="mt-4 divide-y divide-slate-100">
@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
                     </div>
                     <div className="text-end">
                       <p className="text-sm font-extrabold text-brand-900">
-                        {order.itemsCount} article(s)
+                        {order.itemsCount} قطعة
                       </p>
                       <p className="text-[10px] font-bold uppercase text-slate-400">{order.status}</p>
                     </div>
@@ -137,7 +137,7 @@ export default async function AdminDashboard() {
               </ul>
             </>
           ) : (
-            <p className="mt-4 text-sm text-slate-500">Aucune commande pour le moment.</p>
+            <p className="mt-4 text-sm text-slate-500">لا طلبات حالياً.</p>
           )}
         </section>
       </div>

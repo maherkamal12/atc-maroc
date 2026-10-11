@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { site, type Locale } from "@/lib/site";
+import { type Locale } from "@/lib/site";
+import type { ResolvedSite } from "@/lib/cms";
 import { t } from "@/lib/i18n";
 import { categoryName } from "@/lib/data";
 import type { Category, Service } from "@/db/schema";
@@ -8,9 +9,12 @@ type Props = {
   locale: Locale;
   services: Service[];
   categories: Category[];
+  contact: ResolvedSite;
+  aboutText?: string;
 };
 
-export function SiteFooter({ locale, services, categories }: Props) {
+export function SiteFooter({ locale, services, categories, contact, aboutText }: Props) {
+  const site = contact;
   const tr = t(locale);
   const quickLinks = [
     { href: "/", label: tr.home },
@@ -51,7 +55,7 @@ export function SiteFooter({ locale, services, categories }: Props) {
               {locale === "fr" ? site.nameFr : site.nameAr}
             </span>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-slate-400">{tr.footerAbout}</p>
+          <p className="mt-4 text-sm leading-relaxed text-slate-400">{aboutText || tr.footerAbout}</p>
           <div className="mt-5 flex gap-3">
             <a
               href={site.instagram}
@@ -145,9 +149,12 @@ export function SiteFooter({ locale, services, categories }: Props) {
             <li>
               <span className="mb-1 block font-bold text-white">{tr.workingHours}</span>
               <ul className="space-y-1 text-slate-400">
-                {site.hours.map((entry) => (
-                  <li key={entry.fr}>{locale === "fr" ? entry.fr : entry.ar}</li>
-                ))}
+                {(locale === "fr" ? site.hoursFr : site.hoursAr)
+                  .split("\n")
+                  .filter(Boolean)
+                  .map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
               </ul>
             </li>
           </ul>

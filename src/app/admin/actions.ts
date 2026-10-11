@@ -1,29 +1,23 @@
 "use server";
 
-import { timingSafeEqual } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { markMessageRead, updateOrderStatus } from "@/lib/data";
+import {
+  authenticateAdmin,
+  parseSessionCookie,
+  sessionFromUsername,
+  signSession,
+  usingDefaultEnvPassword,
+  type AdminSession,
+} from "@/lib/admin-users";
 
 const COOKIE = "atc_admin";
-const DEFAULT_ADMIN_PASSWORD = "atc2026";
 
-function adminPassword() {
-  return process.env.ADMIN_PASSWORD ?? DEFAULT_ADMIN_PASSWORD;
-}
-
-/** True while the password is still the documented default (dev hint only). */
+/** True while the env password is still the documented default (dev hint only). */
 export async function usingDefaultAdminPassword() {
-  return adminPassword() === DEFAULT_ADMIN_PASSWORD;
-}
-
-/** Constant-time comparison so the password cannot be probed byte by byte. */
-function passwordMatches(candidate: string) {
-  const expected = Buffer.from(adminPassword(), "utf8");
-  const given = Buffer.from(candidate, "utf8");
-  if (expected.length !== given.length) return false;
-  return timingSafeEqual(expected, given);
+  return usingDefaultEnvPassword();
 }
 
 /* ---------------------------- brute force guard --------------------------- */
@@ -60,8 +54,15 @@ function recordFailure(key: string) {
 /* --------------------------------- auth ---------------------------------- */
 
 export async function isAdmin() {
+  const session = await getAdminSession();
+  return Boolean(session);
+}
+
+export async function getAdminSession(): Promise<AdminSession | null> {
   const store = await cookies();
-  return store.get(COOKIE)?.value === "granted";
+  const username = parseSessionCookie(store.get(COOKIE)?.value);
+  if (!username) return null;
+  return sessionFromUsername(username);
 }
 
 export type LoginState = { error: string | null };
@@ -75,20 +76,21 @@ export async function login(_previous: LoginState, formData: FormData): Promise<
   const key = await clientKey();
 
   if (tooManyAttempts(key)) {
-    return { error: "Trop de tentatives. Patientez quelques minutes avant de réessayer." };
+    return { error: "محاولات كثيرة. انتظروا بضع دقائق ثم أعيدوا المحاولة." };
   }
 
-  const password = String(formData.get("password") ?? "");
-  if (!passwordMatches(password)) {
+  const username = String(formData.get("username") ?? "").trim();
+  const password = String(formData.get("password") ?? "").trim();
+  const session = await authenticateAdmin(username, password);
+  if (!session) {
     recordFailure(key);
-    // Slow down automated guessing a little.
     await new Promise((resolve) => setTimeout(resolve, 400));
-    return { error: "Mot de passe incorrect. Réessayez." };
+    return { error: "اسم المستخدم أو كلمة المرور غير صحيحة." };
   }
 
   attempts.delete(key);
   const store = await cookies();
-  store.set(COOKIE, "granted", {
+  store.set(COOKIE, signSession(session.username), {
     httpOnly: true,
     sameSite: "lax",
     path: "/",

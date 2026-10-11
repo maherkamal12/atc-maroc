@@ -30,3 +30,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# local media uploads (Blob in production)
+/public/media/*
+!/public/media/.gitkeep

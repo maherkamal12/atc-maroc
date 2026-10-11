@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
-import { DDL_STATEMENTS, EXPECTED_TABLES } from "@/db/ddl";
+import { DDL_ALTER_STATEMENTS, DDL_STATEMENTS, EXPECTED_TABLES } from "@/db/ddl";
 
 /**
  * Provisioning of a brand new database.
@@ -54,9 +54,26 @@ function isAlreadyExistsError(error: unknown): boolean {
   return code === "42P07" || code === "42710" || code === "42701" || code === "23505";
 }
 
+async function applyDdl() {
+  for (const statement of [...DDL_STATEMENTS, ...DDL_ALTER_STATEMENTS]) {
+    try {
+      await db.execute(sql.raw(statement));
+    } catch (error) {
+      if (isAlreadyExistsError(error)) continue;
+      throw error;
+    }
+  }
+}
+
 async function provision(): Promise<SchemaReport> {
   const missing = await missingTables();
-  if (!missing.length) return { ready: true, created: false, missing: [] };
+
+  if (!missing.length) {
+    if (autoMigrateEnabled()) {
+      await applyDdl();
+    }
+    return { ready: true, created: false, missing: [] };
+  }
 
   if (!autoMigrateEnabled()) {
     return { ready: false, created: false, missing };
@@ -66,14 +83,7 @@ async function provision(): Promise<SchemaReport> {
     `[db] creating missing tables (${missing.join(", ")}) — set DATABASE_AUTO_MIGRATE=false to disable, or run npm run db:push`,
   );
 
-  for (const statement of DDL_STATEMENTS) {
-    try {
-      await db.execute(sql.raw(statement));
-    } catch (error) {
-      if (isAlreadyExistsError(error)) continue;
-      throw error;
-    }
-  }
+  await applyDdl();
 
   const stillMissing = await missingTables();
   if (stillMissing.length) {
