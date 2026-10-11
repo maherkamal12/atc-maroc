@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "../../actions";
-import { storeUpload } from "@/lib/media";
+import { storeLogoUpload, storeUpload } from "@/lib/media";
 
 export async function POST(request: Request) {
   if (!(await isAdmin())) {
@@ -11,7 +11,8 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
   }
-  if (form.get("purpose") === "logo") {
+  const isLogoUpload = form.get("purpose") === "logo";
+  if (isLogoUpload) {
     const imageByName = /\.(png|jpe?g|gif|webp|svg|avif)$/i.test(file.name);
     if (!file.type.startsWith("image/") && !imageByName) {
       return NextResponse.json({ error: "اختر ملف صورة للشعار (PNG أو JPG أو SVG أو WebP)." }, { status: 400 });
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "حجم الشعار يجب أن يكون 5 ميغابايت أو أقل." }, { status: 413 });
     }
   }
-  const result = await storeUpload(file);
+  const result = isLogoUpload ? await storeLogoUpload(file) : await storeUpload(file);
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }

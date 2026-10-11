@@ -170,6 +170,7 @@ export const DDL_STATEMENTS: readonly string[] = [
     "content_type" varchar(120) DEFAULT '' NOT NULL,
     "size" integer DEFAULT 0 NOT NULL,
     "storage" varchar(20) DEFAULT 'url' NOT NULL,
+    "data" bytea,
     "created_at" timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT "media_assets_url_unique" UNIQUE("url")
   )`,
@@ -190,6 +191,7 @@ export const DDL_ALTER_STATEMENTS: readonly string[] = [
   `ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "published" boolean DEFAULT true NOT NULL`,
   `ALTER TABLE "contact_messages" ADD COLUMN IF NOT EXISTS "archived" boolean DEFAULT false NOT NULL`,
   `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "archived" boolean DEFAULT false NOT NULL`,
+  `ALTER TABLE "media_assets" ADD COLUMN IF NOT EXISTS "data" bytea`,
 ];
 
 /** Tables the application expects to find, in creation order. */

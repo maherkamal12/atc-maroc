@@ -1,7 +1,8 @@
 import { desc, eq } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
+import { canQueryDatabase, db, isDatabaseConfigured, markDatabaseUnavailable } from "@/db";
 import { contentBlocks, customPages, mediaAssets, type MediaAsset } from "@/db/schema";
 import { ensureSeeded } from "@/db/seed";
 import { listMediaRefs } from "@/lib/admin-data";
@@ -84,6 +85,21 @@ export function mediaUploadsEnabled() {
   return Boolean(blobToken()) || !isServerlessFs();
 }
 
+export function logoUploadHint() {
+  if (blobToken()) return "تُرفع صورة الشعار إلى Vercel Blob.";
+  if (isServerlessFs() && isDatabaseConfigured()) {
+    return "لا يوجد Blob مفعّل؛ ستُحفظ صورة الشعار في قاعدة البيانات لتظل متاحة بعد إعادة النشر.";
+  }
+  if (isServerlessFs()) {
+    return "اربط قاعدة البيانات لحفظ الشعار مباشرة، أو أضف BLOB_READ_WRITE_TOKEN لاستخدام Vercel Blob.";
+  }
+  return "تُحفظ الصورة محلياً في /public/media أثناء التطوير.";
+}
+
+export function logoUploadsEnabled() {
+  return Boolean(blobToken()) || !isServerlessFs() || isDatabaseConfigured();
+}
+
 export async function storeUpload(file: File): Promise<{ url: string } | { error: string }> {
   const filename = `${Date.now()}-${safeName(file.name)}`;
   const token = blobToken();
@@ -137,6 +153,57 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
   }
 }
 
+const imageContentTypes: Record<string, string> = {
+  ".avif": "image/avif",
+  ".gif": "image/gif",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".webp": "image/webp",
+};
+
+function uploadContentType(file: File) {
+  if (file.type.startsWith("image/")) return file.type;
+  return imageContentTypes[path.extname(file.name).toLowerCase()] ?? "application/octet-stream";
+}
+
+/**
+ * Store a logo durably on serverless hosting even when Blob is not configured.
+ * Logo files are intentionally small (the upload route caps them at 5 MB), so
+ * PostgreSQL is a reasonable fallback for this single site-wide asset.
+ */
+export async function storeLogoUpload(file: File): Promise<{ url: string } | { error: string }> {
+  if (blobToken() || !isServerlessFs()) return storeUpload(file);
+
+  await ensureSeeded();
+  if (!canQueryDatabase()) {
+    return { error: "قاعدة البيانات غير متاحة لحفظ الشعار حالياً. حاول مرة أخرى أو أضف BLOB_READ_WRITE_TOKEN." };
+  }
+
+  const key = randomUUID();
+  const url = `/api/media/${key}`;
+  try {
+    const [asset] = await db
+      .insert(mediaAssets)
+      .values({
+        url,
+        pathname: `database/${key}`,
+        filename: file.name,
+        contentType: uploadContentType(file),
+        size: file.size,
+        storage: "database",
+        data: Buffer.from(await file.arrayBuffer()),
+      })
+      .returning({ url: mediaAssets.url });
+    if (!asset) return { error: "تعذر حفظ الشعار في قاعدة البيانات." };
+    return { url: asset.url };
+  } catch (error) {
+    markDatabaseUnavailable("storeLogoUpload", error);
+    return { error: "تعذر تخزين الشعار في قاعدة البيانات. تحقق من تحديث مخطط قاعدة البيانات." };
+  }
+}
+
 async function extraRefsFromPages() {
   const refs: { url: string; kind: string; label: string; href: string }[] = [];
   if (!canQueryDatabase()) return refs;
@@ -170,7 +237,7 @@ async function extraRefsFromPages() {
     const blocks = await db.select().from(contentBlocks);
     for (const block of blocks) {
       for (const value of [block.valueAr, block.valueFr]) {
-        if (value.startsWith("http") || value.startsWith("/media/")) {
+        if (value.startsWith("http") || value.startsWith("/media/") || value.startsWith("/api/media/")) {
           refs.push({ url: value, kind: "content", label: block.key, href: "/admin/content" });
         }
       }
@@ -194,7 +261,19 @@ export async function listLibrary(): Promise<LibraryItem[]> {
   const items: LibraryItem[] = [];
   if (canQueryDatabase()) {
     try {
-      const rows = await db.select().from(mediaAssets).orderBy(desc(mediaAssets.createdAt));
+      const rows = await db
+        .select({
+          id: mediaAssets.id,
+          url: mediaAssets.url,
+          pathname: mediaAssets.pathname,
+          filename: mediaAssets.filename,
+          contentType: mediaAssets.contentType,
+          size: mediaAssets.size,
+          storage: mediaAssets.storage,
+          createdAt: mediaAssets.createdAt,
+        })
+        .from(mediaAssets)
+        .orderBy(desc(mediaAssets.createdAt));
       for (const row of rows) {
         items.push({
           id: row.id,

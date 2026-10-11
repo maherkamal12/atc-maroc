@@ -1,7 +1,7 @@
 import { AdminHeader } from "../_ui";
 import { LogoWizard } from "./logo-wizard";
 import { getResolvedSite } from "@/lib/cms";
-import { mediaUploadHint, mediaUploadsEnabled } from "@/lib/media";
+import { logoUploadHint, logoUploadsEnabled } from "@/lib/media";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +21,8 @@ export default async function LogoAdminPage() {
         nameFr={site.nameFr}
         taglineAr={site.taglineAr}
         taglineFr={site.taglineFr}
-        uploadHint={mediaUploadHint()}
-        uploadsEnabled={mediaUploadsEnabled()}
+        uploadHint={logoUploadHint()}
+        uploadsEnabled={logoUploadsEnabled()}
       />
       <aside className="rounded-2xl border border-blue-100 bg-blue-50 p-5 text-sm leading-7 text-blue-950">
         <h2 className="font-extrabold">ملاحظة حول الملفات</h2>

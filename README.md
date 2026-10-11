@@ -104,8 +104,10 @@ button appears to do nothing.
 
 Use **تغيير الشعار** in the admin sidebar to open the guided logo wizard: upload a logo or enter an
 image URL, preview it in both Arabic and French headers, then confirm publication. Uploaded logo
-files use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is configured; local development stores them in
-`public/media`. You can also choose a URL already present in the media library.
+files use Vercel Blob when `BLOB_READ_WRITE_TOKEN` is configured. On serverless hosting without a
+Blob token, the logo can be stored in PostgreSQL (when `DATABASE_URL` is configured); local
+development stores uploads in `public/media`. You can also choose a URL already present in the
+media library.
 
 ## Scripts
 

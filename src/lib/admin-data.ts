@@ -571,8 +571,13 @@ export async function listMediaRefs(): Promise<MediaRef[]> {
     }
     const settings = await db.select().from(siteSettings);
     for (const row of settings) {
-      if (row.value.startsWith("http")) {
-        refs.push({ url: row.value, kind: "settings", label: row.key, href: "/admin/settings" });
+      if (row.value.startsWith("http") || row.value.startsWith("/media/") || row.value.startsWith("/api/media/")) {
+        refs.push({
+          url: row.value,
+          kind: "settings",
+          label: row.key,
+          href: row.key === "logoUrl" ? "/admin/logo" : "/admin/settings",
+        });
       }
     }
     return refs;
