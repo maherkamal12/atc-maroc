@@ -6,7 +6,7 @@ import { defaultSite, getResolvedSite, SETTING_KEYS } from "@/lib/cms";
 
 export const dynamic = "force-dynamic";
 
-const labels: Record<(typeof SETTING_KEYS)[number], string> = {
+const labels: Partial<Record<(typeof SETTING_KEYS)[number], string>> = {
   nameAr: "اسم الموقع (عربي)",
   nameFr: "اسم الموقع (فرنسي)",
   taglineAr: "الشعار العربي",
@@ -29,9 +29,9 @@ const labels: Record<(typeof SETTING_KEYS)[number], string> = {
   heroSolar: "صورة الطاقة الشمسية",
   heroElectrical: "صورة الكهرباء",
   heroInterior: "صورة التصميم الداخلي",
-  logoUrl: "رابط الشعار (فارغ = حرف ATC)",
-  logoText: "نص الشعار إن لم توجد صورة",
 };
+
+const settingsKeys = SETTING_KEYS.filter((key) => key !== "logoUrl" && key !== "logoText");
 
 export default async function SettingsPage() {
   const site = await getResolvedSite();
@@ -40,15 +40,16 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       <AdminHeader
         title="إعدادات الموقع"
-        subtitle="الحقول الفارغة تُظهر القيم الأصلية للموقع."
+        subtitle="الحقول الفارغة تُظهر القيم الأصلية للموقع. لإدارة شعار الموقع استخدم معالج الشعار."
+        action={{ href: "/admin/logo", label: "تغيير الشعار" }}
       />
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <ActionForm action={saveSettingsAction}>
           <div className="grid gap-4 md:grid-cols-2">
-            {SETTING_KEYS.map((key) => (
+            {settingsKeys.map((key) => (
               <Field
                 key={key}
-                label={labels[key]}
+                label={labels[key] ?? key}
                 name={key}
                 defaultValue={site[key] || defaultSite[key]}
                 textarea={long.has(key)}

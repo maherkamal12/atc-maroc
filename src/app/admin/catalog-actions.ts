@@ -253,12 +253,52 @@ export async function deletePostAction(formData: FormData) {
 export async function saveSettingsAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await guard();
   const values: Partial<Record<SettingKey, string>> = {};
-  for (const key of SETTING_KEYS) values[key] = str(formData, key);
+  // Some settings (such as the logo) are managed by their own guided editor.
+  // Do not overwrite them when this form submits only the visible fields.
+  for (const key of SETTING_KEYS) {
+    if (formData.has(key)) values[key] = str(formData, key);
+  }
   const ok = await saveSettings(values);
   revalidatePublic();
   revalidatePath("/admin/settings");
   if (!ok) return { error: "Impossible d'enregistrer les réglages (base indisponible)." };
   return { error: null, ok: true };
+}
+
+function isSafeLogoUrl(value: string) {
+  if (!value) return true;
+  if (value.startsWith("/") && !value.startsWith("//") && !value.includes("\\")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export type LogoActionState = ActionState & {
+  savedLogoUrl?: string;
+  savedLogoText?: string;
+};
+
+export async function saveLogoAction(_prev: LogoActionState, formData: FormData): Promise<LogoActionState> {
+  await guard();
+  const logoUrl = str(formData, "logoUrl").trim();
+  const logoText = str(formData, "logoText").trim() || "ATC";
+  if (logoUrl.length > 2048 || !isSafeLogoUrl(logoUrl)) {
+    return { error: "أدخل رابط صورة صالحاً يبدأ بـ https:// أو /media/، أو اختر استخدام الأحرف فقط." };
+  }
+  if (logoText.length > 24) {
+    return { error: "يجب ألا يتجاوز النص البديل 24 حرفاً." };
+  }
+
+  const ok = await saveSettings({ logoUrl, logoText });
+  revalidatePublic();
+  revalidatePath("/admin/logo");
+  revalidatePath("/admin/menu");
+  revalidatePath("/admin/settings");
+  if (!ok) return { error: "تعذر حفظ الشعار. تحقق من اتصال قاعدة البيانات ثم حاول مرة أخرى." };
+  return { error: null, ok: true, savedLogoUrl: logoUrl, savedLogoText: logoText };
 }
 
 export async function saveNavAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -272,14 +312,10 @@ export async function saveNavAction(_prev: ActionState, formData: FormData): Pro
     sort: Number(formData.getAll("sort")[index] ?? index) || index,
     visible: String(formData.getAll("visible")[index] ?? "1") !== "0",
   }));
-  const logoOk = await saveSettings({
-    logoUrl: str(formData, "logoUrl"),
-    logoText: str(formData, "logoText"),
-  });
   const ok = await saveNavRows(rows);
   revalidatePublic();
   revalidatePath("/admin/menu");
-  if (!logoOk || !ok) return { error: "Impossible d'enregistrer le menu (base indisponible)." };
+  if (!ok) return { error: "Impossible d'enregistrer le menu (base indisponible)." };
   return { error: null, ok: true };
 }
 

@@ -48,9 +48,18 @@ export function SiteFooter({ locale, services, categories, contact, aboutText }:
       <div className="wrap grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/10 text-sm font-black text-white">
-              ATC
-            </span>
+            {site.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={site.logoUrl}
+                alt={site.logoText || site.nameFr}
+                className="h-11 w-auto max-w-[9rem] rounded-lg bg-white p-1 object-contain"
+              />
+            ) : (
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/10 text-sm font-black text-white">
+                {site.logoText || "ATC"}
+              </span>
+            )}
             <span className="text-lg font-extrabold text-white">
               {locale === "fr" ? site.nameFr : site.nameAr}
             </span>
