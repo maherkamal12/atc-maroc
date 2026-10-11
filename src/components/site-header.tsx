@@ -56,9 +56,12 @@ export function SiteHeader({ locale, contact, items, labels }: Props) {
   };
 
   const switchLocale = () => {
+    const nextLocale = otherLocale(locale);
+    document.documentElement.lang = nextLocale;
+    document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
     const segments = pathname.split("/");
-    segments[1] = otherLocale(locale);
-    router.push(segments.join("/") || `/${otherLocale(locale)}`);
+    segments[1] = nextLocale;
+    router.push(segments.join("/") || `/${nextLocale}`);
   };
 
   const submitSearch = (event: React.FormEvent) => {
