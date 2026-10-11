@@ -83,7 +83,11 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           </div>
           <div className="space-y-4">
             {blocks.map((block) => (
-              <div key={block.title} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <div
+                key={block.title}
+                dir={locale === "fr" ? "ltr" : "rtl"}
+                className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+              >
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-lg">
                     {block.icon}
