@@ -35,7 +35,7 @@ export default async function AdminProductsPage({
       <DbBanner failed={sp.db === "error"} />
 
       <form className="flex flex-wrap gap-2" method="get">
-        <input name="q" defaultValue={sp.q} placeholder="بحث…" className="field max-w-xs" />
+        <input name="q" dir="auto" defaultValue={sp.q} placeholder="بحث…" className="field max-w-xs" />
         <select name="category" defaultValue={sp.category ?? ""} className="field max-w-xs">
           <option value="">كل التصنيفات</option>
           {categories.map((c) => (

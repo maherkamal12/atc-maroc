@@ -71,6 +71,7 @@ export function MediaLibrary({
           بحث
           <input
             className="field mt-1"
+            dir="auto"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="الاسم، الرابط، البطاقة…"

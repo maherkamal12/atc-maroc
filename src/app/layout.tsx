@@ -23,10 +23,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const headerList = await headers();
-  const locale = headerList.get("x-locale") === "fr" ? "fr" : "ar";
+  const locale = headerList.get("x-locale") || "ar";
+  const direction = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={locale === "fr" ? "ltr" : "rtl"}>
+    <html lang={locale} dir={direction}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

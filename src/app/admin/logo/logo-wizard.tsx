@@ -319,6 +319,7 @@ export function LogoWizard({
                 <span className="text-sm font-extrabold text-brand-950">الأحرف البديلة عند عدم وجود صورة</span>
                 <input
                   type="text"
+                  dir="ltr"
                   value={logoText}
                   maxLength={24}
                   onChange={(event) => setLogoText(event.target.value)}

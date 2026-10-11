@@ -79,6 +79,7 @@ function Fields({
         الرابط
         <input
           className="field mt-1"
+          dir="ltr"
           value={node.href}
           placeholder={placeholderHref}
           onChange={(e) => onChange({ href: e.target.value })}
@@ -88,8 +89,9 @@ function Fields({
         التسمية بالفرنسية
         <input
           className="field mt-1"
+          dir="ltr"
           value={node.labelFr}
-          placeholder="الرئيسية"
+          placeholder="Accueil"
           onChange={(e) => onChange({ labelFr: e.target.value })}
         />
       </label>

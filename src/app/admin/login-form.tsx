@@ -63,6 +63,7 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
             id="username"
             name="username"
             type="text"
+            dir="ltr"
             className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold outline-none ring-accent-500/30 transition focus:border-accent-500 focus:bg-white focus:ring-4"
             placeholder="admin"
             autoComplete="username"
@@ -80,6 +81,7 @@ export function LoginForm({ showDefaultHint }: { showDefaultHint: boolean }) {
               id="password"
               name="password"
               type={visible ? "text" : "password"}
+              dir="ltr"
               className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 pe-16 text-sm font-semibold outline-none ring-accent-500/30 transition focus:border-accent-500 focus:bg-white focus:ring-4"
               placeholder="••••••••"
               autoComplete="current-password"

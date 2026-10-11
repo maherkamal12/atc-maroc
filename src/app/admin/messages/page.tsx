@@ -36,7 +36,7 @@ export default async function AdminMessagesPage({
         <p className="text-sm text-slate-500">{filtered.length} رسالة.</p>
       </header>
       <form className="flex flex-wrap gap-2" method="get">
-        <input name="q" defaultValue={sp.q} className="field max-w-xs" placeholder="بحث…" />
+        <input name="q" dir="auto" defaultValue={sp.q} className="field max-w-xs" placeholder="بحث…" />
         <button className="btn btn-primary">تصفية</button>
         <Link className="btn btn-outline" href="/admin/messages/export">
           تصدير CSV
