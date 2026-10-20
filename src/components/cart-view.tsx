@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useQuote } from "./cart-provider";
+import { SafeImage } from "./safe-image";
 import type { Locale } from "@/lib/site";
 
 type Labels = {
@@ -136,8 +137,7 @@ export function QuoteView({ locale, labels }: { locale: Locale; labels: Labels }
               className="grid grid-cols-1 gap-4 border-b border-slate-100 p-5 last:border-0 md:grid-cols-[2fr_1fr_auto] md:items-center"
             >
               <div className="flex items-center gap-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <SafeImage
                   src={item.image}
                   alt=""
                   className="h-16 w-16 rounded-lg bg-white object-contain p-1 ring-1 ring-slate-100"

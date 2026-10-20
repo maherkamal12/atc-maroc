@@ -19,28 +19,59 @@ import {
 import { ensureSeeded } from "@/db/seed";
 import { postSeed, serviceSeed } from "@/db/seed-data";
 import { generatedCategories, generatedProducts } from "@/db/products.generated";
+import { resolveImage } from "@/lib/images";
 
 /* ---------- fallbacks (used when the database is unavailable) ---------- */
+
+const FEATURED_SLUGS = new Set([
+  "alfa-545w-half-cut-gunes-paneli",
+  "tg-inverter-031-growatt-5kva-5000w-trifaze-hibrit-akilli-inverter",
+  "tg-aku-021-pylontech-3-5kwh-lifepo4-lityum-aku",
+  "tg-solar-sarj-kontol-cihazi-046-victron-smartsolar-mppt-100-50ah-12-24-volt",
+  "tg-kablokonnektor-005-mc4-konnektor-uclu-baglanti-seti-1",
+  "tg-kombi-016-proteus-premix-30-kw-yogusmali",
+  "tg-dalgic-pompa-053-48-volt-dc-solar-gunes-enerjili-70mm-dis-cap-650-watt-panolu-80mss-3m3-h",
+  "lexron-625w-half-cut-gunes-paneli",
+]);
 
 const fallbackServices: Service[] = serviceSeed.map((item, index) => ({ id: index + 1, ...item }));
 
 const fallbackCategories: Category[] = generatedCategories.map((item, index) => ({
   id: index + 1,
   ...item,
+  image: resolveImage(item.image, { categorySlug: item.slug }),
 }));
 
 const categoryBySlug = new Map(generatedCategories.map((category) => [category.slug, category]));
 
-const fallbackProducts: Product[] = generatedProducts.map((item, index) => ({
-  id: index + 1,
-  descAr: item.nameAr,
-  descFr: item.nameFr,
-  featured: false,
-  inStock: true,
-  sort: index + 1,
-  createdAt: new Date(Date.now() - index * 3600_000),
-  ...item,
-}));
+const fallbackProducts: Product[] = generatedProducts.map((item, index) => {
+  const cat = categoryBySlug.get(item.categorySlug);
+  return {
+    id: index + 1,
+    descAr: cat ? `${item.nameAr} — ${cat.descAr}` : item.nameAr,
+    descFr: cat ? `${item.nameFr} — ${cat.descFr}` : item.nameFr,
+    featured: FEATURED_SLUGS.has(item.slug),
+    inStock: true,
+    sort: index + 1,
+    createdAt: new Date(Date.now() - index * 3600_000),
+    ...item,
+    image: resolveImage(item.image, { categorySlug: item.categorySlug }),
+  };
+});
+
+function normalizeCategoryRow(row: Category): Category {
+  return {
+    ...row,
+    image: resolveImage(row.image, { categorySlug: row.slug }),
+  };
+}
+
+function normalizeProductRow(row: Product): Product {
+  return {
+    ...row,
+    image: resolveImage(row.image, { categorySlug: row.categorySlug }),
+  };
+}
 
 const fallbackPosts: Post[] = postSeed.map((item, index) => ({
   id: index + 1,
@@ -118,7 +149,7 @@ export async function getCategories(): Promise<Category[]> {
   if (!canQueryDatabase()) return fallbackCategories;
   try {
     const rows = await db.select().from(categories).orderBy(asc(categories.sort));
-    return rows.length ? rows : fallbackCategories;
+    return rows.length ? rows.map(normalizeCategoryRow) : fallbackCategories;
   } catch (error) {
     markDatabaseUnavailable("getCategories", error);
     return fallbackCategories;
@@ -213,7 +244,7 @@ export async function getProductsPage(
 
     if (total === 0 && !query.category && !query.q) throw new Error("empty");
     return {
-      items,
+      items: items.map(normalizeProductRow),
       total,
       page,
       pages: Math.max(1, Math.ceil(total / pageSize)),
@@ -256,7 +287,7 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
       .orderBy(sort === "name" ? asc(products.nameFr) : desc(products.id));
 
     const rows = limit ? await base.limit(limit) : await base;
-    if (rows.length) return rows;
+    if (rows.length) return rows.map(normalizeProductRow);
     if (category || q || featured) return [];
     throw new Error("empty");
   } catch (error) {
@@ -298,7 +329,7 @@ export async function getProduct(slug: string): Promise<Product | null> {
   }
   try {
     const rows = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
-    if (rows[0]) return rows[0];
+    if (rows[0]) return normalizeProductRow(rows[0]);
   } catch (error) {
     markDatabaseUnavailable("getProduct", error);
   }

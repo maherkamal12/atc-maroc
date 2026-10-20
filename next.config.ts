@@ -33,6 +33,32 @@ const extraOrigins = (process.env.SERVER_ACTIONS_ALLOWED_ORIGINS ?? "")
 const allowedOrigins = [...proxyOrigins, ...extraOrigins];
 
 const nextConfig: NextConfig = {
+  images: {
+    // The catalog mixes self-hosted legacy URLs and Pexels hero images.
+    // Unoptimized is fine (we use <img>), but remotePatterns unlocks next/image if you switch.
+    remotePatterns: [
+      { protocol: "https", hostname: "atc-maroc.com" },
+      { protocol: "https", hostname: "images.pexels.com" },
+      { protocol: "https", hostname: "**.vercel-storage.com" },
+      { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
+    ],
+  },
+  async rewrites() {
+    return [
+      // If a legacy host is configured, proxy /wp-content to it so you don't
+      // have to rewrite every DB row. Set LEGACY_IMAGE_BASE=https://old-host or
+      // NEXT_PUBLIC_LEGACY_IMAGE_BASE. Without it the /wp-content route below
+      // serves a nice SVG placeholder instead of a 404.
+      ...(process.env.LEGACY_IMAGE_BASE || process.env.NEXT_PUBLIC_LEGACY_IMAGE_BASE
+        ? [
+            {
+              source: "/wp-content/:path*",
+              destination: `${(process.env.LEGACY_IMAGE_BASE || process.env.NEXT_PUBLIC_LEGACY_IMAGE_BASE || "").replace(/\/$/, "")}/wp-content/:path*`,
+            },
+          ]
+        : []),
+    ];
+  },
   experimental: {
     serverActions: {
       allowedOrigins,

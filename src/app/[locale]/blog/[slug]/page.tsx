@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import { getPost, getPosts, postBody, postTag, postTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
@@ -39,8 +40,7 @@ export default async function PostPage({
         <div className="wrap grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           <article>
             <div className="overflow-hidden rounded-3xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={post.image} alt="" className="h-72 w-full object-cover md:h-96" />
+              <SafeImage src={post.image} alt="" className="h-72 w-full object-cover md:h-96" />
             </div>
             <div className="mt-8 space-y-4">
               {paragraphs.map((paragraph, index) => (
@@ -71,8 +71,7 @@ export default async function PostPage({
                       href={`/${locale}/blog/${item.slug}`}
                       className="flex gap-3 text-sm font-semibold text-slate-700 transition hover:text-accent-600"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.image} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                      <SafeImage src={item.image} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
                       <span className="line-clamp-2-custom">{postTitle(item, locale)}</span>
                     </Link>
                   </li>

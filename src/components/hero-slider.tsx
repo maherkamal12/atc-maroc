@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { SafeImage } from "./safe-image";
 
 export type Slide = {
   image: string;
@@ -31,10 +32,10 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           }`}
           aria-hidden={position !== index}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <SafeImage
             src={slide.image}
             alt=""
+            fallbackSrc="/placeholders/hero-fallback.svg"
             className={`h-full w-full object-cover ${position === index ? "hero-slide" : ""}`}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-brand-950/95 via-brand-950/70 to-brand-950/25" />

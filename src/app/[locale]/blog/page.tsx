@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import { getPosts, postExcerpt, postTag, postTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
@@ -33,8 +34,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
               className="card group mb-10 grid gap-0 overflow-hidden md:grid-cols-2"
             >
               <div className="relative h-56 overflow-hidden md:h-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <SafeImage
                   src={featured.image}
                   alt={postTitle(featured, locale)}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
@@ -65,8 +65,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
             {rest.map((post) => (
               <Link key={post.slug} href={`/${locale}/blog/${post.slug}`} className="card group block">
                 <div className="relative h-44 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={post.image}
                     alt={postTitle(post, locale)}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"

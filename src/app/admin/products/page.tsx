@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SafeImage } from "@/components/safe-image";
 import { AdminHeader, DbBanner } from "../_ui";
 import {
   bulkProductsAction,
@@ -108,8 +109,12 @@ export default async function AdminProductsPage({
                     </td>
                     <td className="px-3 py-2">
                       {product.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={product.image} alt="" className="h-12 w-12 rounded-lg object-cover" />
+                        <SafeImage
+                          src={product.image}
+                          alt=""
+                          categorySlug={product.categorySlug}
+                          className="h-12 w-12 rounded-lg object-cover"
+                        />
                       ) : (
                         <span className="grid h-12 w-12 place-items-center rounded-lg bg-slate-100 text-xs">—</span>
                       )}

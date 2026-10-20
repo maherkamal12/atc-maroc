@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import {
   getService,
@@ -81,8 +82,7 @@ export default async function ServiceDetailPage({
             </div>
 
             <div className="mt-10 overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={service.image} alt="" className="h-72 w-full object-cover" loading="lazy" />
+              <SafeImage src={service.image} alt="" className="h-72 w-full object-cover" loading="lazy" />
             </div>
           </article>
 

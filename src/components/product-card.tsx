@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useQuote } from "./cart-provider";
+import { SafeImage } from "./safe-image";
 import type { Locale } from "@/lib/site";
 
 export type ProductCardData = {
@@ -14,6 +15,7 @@ export type ProductCardData = {
   image: string;
   brand: string;
   inStock: boolean;
+  categorySlug?: string;
 };
 
 export function ProductCard({
@@ -42,10 +44,10 @@ export function ProductCard({
   return (
     <div className="card group flex flex-col">
       <Link href={`/${locale}/products/${product.slug}`} className="relative block overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <SafeImage
           src={product.image}
           alt={product.name}
+          categorySlug={product.categorySlug}
           className="h-52 w-full bg-white object-contain p-3 transition duration-500 group-hover:scale-105"
           loading="lazy"
         />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroSlider } from "@/components/hero-slider";
 import { ProductCard } from "@/components/product-card";
+import { SafeImage } from "@/components/safe-image";
 import { SectionHeading } from "@/components/ui";
 import {
   getPosts,
@@ -123,8 +124,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 className="card group block"
               >
                 <div className="relative h-48 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={service.image}
                     alt={serviceTitle(service, locale)}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
@@ -217,8 +217,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             ].map((card) => (
               <div key={card.title} className="card overflow-hidden">
                 <div className="relative h-44 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={card.image} alt={card.title} className="h-full w-full object-cover" loading="lazy" />
+                  <SafeImage src={card.image} alt={card.title} className="h-full w-full object-cover" loading="lazy" />
                   <span className="absolute top-3 start-3 grid h-10 w-10 place-items-center rounded-xl bg-white/95 text-lg">
                     {card.icon}
                   </span>
@@ -282,6 +281,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   image: product.image,
                   brand: product.brand,
                   inStock: product.inStock,
+                  categorySlug: product.categorySlug,
                 }}
                 labels={{
                   addToQuote: tr.addToQuote,
@@ -308,8 +308,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             {posts.map((post) => (
               <Link key={post.slug} href={`/${locale}/blog/${post.slug}`} className="card group block">
                 <div className="relative h-44 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={post.image}
                     alt={postTitle(post, locale)}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"

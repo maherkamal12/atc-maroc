@@ -1,7 +1,11 @@
 import { AdminHeader } from "../_ui";
 import { ActionForm } from "../_form";
 import { Field } from "../_ui";
-import { registerMediaUrlAction, replaceMediaAction } from "../catalog-actions";
+import {
+  registerMediaUrlAction,
+  replaceMediaAction,
+  replaceMediaPrefixAction,
+} from "../catalog-actions";
 import { listLibrary, mediaUploadHint, mediaUploadsEnabled } from "@/lib/media";
 import { MediaLibrary } from "./library-client";
 
@@ -14,7 +18,9 @@ export default async function MediaPage({
 }) {
   const sp = await searchParams;
   const items = await listLibrary();
-  const uploads = items.filter((item) => item.storage === "blob" || item.storage === "local").length;
+  const uploads = items.filter(
+    (item) => item.storage === "blob" || item.storage === "local" || item.storage === "database",
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -30,7 +36,7 @@ export default async function MediaPage({
         uploadsEnabled={mediaUploadsEnabled()}
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <h2 className="mb-3 text-sm font-extrabold">تسجيل رابط موجود</h2>
           <ActionForm action={registerMediaUrlAction} submitLabel="إضافة إلى المكتبة">
@@ -43,6 +49,23 @@ export default async function MediaPage({
             <div className="grid gap-3">
               <Field label="الرابط الحالي" name="from" />
               <Field label="الرابط الجديد" name="to" />
+            </div>
+          </ActionForm>
+        </div>
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-3 text-sm font-extrabold">استبدال نطاق الصور القديمة دفعة واحدة</h2>
+          <ActionForm action={replaceMediaPrefixAction} submitLabel="تحويل جميع الروابط">
+            <div className="grid gap-3">
+              <Field
+                label="البادئة القديمة"
+                name="fromPrefix"
+                defaultValue="https://atc-maroc.com/wp-content/uploads"
+              />
+              <Field
+                label="البادئة الجديدة (أو خادم النسخة الاحتياطية)"
+                name="toPrefix"
+                hint="مثال: https://backup.atc-maroc.com/wp-content/uploads"
+              />
             </div>
           </ActionForm>
         </div>
