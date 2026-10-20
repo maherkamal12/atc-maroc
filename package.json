@@ -11,7 +11,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "node scripts/db-check.mjs",
-    "db:import": "node scripts/db-import.mjs"
+    "db:import": "node scripts/db-import.mjs",
+    "fetch:product-images": "node scripts/fetch-product-images.mjs"
   },
   "dependencies": {
     "dotenv": "17.3.1",

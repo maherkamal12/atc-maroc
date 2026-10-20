@@ -45,10 +45,10 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // If a legacy host is configured, proxy /wp-content to it so you don't
-      // have to rewrite every DB row. Set LEGACY_IMAGE_BASE=https://old-host or
-      // NEXT_PUBLIC_LEGACY_IMAGE_BASE. Without it the /wp-content route below
-      // serves a nice SVG placeholder instead of a 404.
+      // Optional bridge to a separate legacy host while restoring media. Do not
+      // point this at atc-maroc.com after that domain's DNS is moved to Vercel:
+      // it would proxy image requests back to the new site. For a static mirror,
+      // leave LEGACY_IMAGE_BASE / NEXT_PUBLIC_LEGACY_IMAGE_BASE unset.
       ...(process.env.LEGACY_IMAGE_BASE || process.env.NEXT_PUBLIC_LEGACY_IMAGE_BASE
         ? [
             {

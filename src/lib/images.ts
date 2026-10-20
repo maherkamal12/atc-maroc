@@ -2,17 +2,16 @@
  * Central image handling for the ATC site.
  *
  * The catalog was originally on WordPress at https://atc-maroc.com/wp-content/uploads/…
- * After the Namecheap → Vercel migration the DNS now points to Vercel, so every
- * old URL returned 404 and the browser showed the alt text (the product/file name).
+ * After the Namecheap → Vercel migration, the app must serve original WordPress uploads
+ * from local files (or durable media storage), not rely on the domain's old DNS target.
  *
  * This module:
  *  - detects legacy URLs (any atc-maroc.com/wp-content URL or /wp-content/uploads path)
  *  - if `LEGACY_IMAGE_BASE` / `NEXT_PUBLIC_LEGACY_IMAGE_BASE` is set, rewrites legacy
  *    URLs to that host
  *  - otherwise normalizes `https://atc-maroc.com/wp-content/uploads/...` to a relative
- *    `/wp-content/uploads/...` path so the Next.js route `/wp-content/uploads/[...path]`
- *    intercepts it on every domain (production, Vercel preview, localhost) and serves
- *    either a restored file, a DB-uploaded asset, or a product-specific SVG illustration
+ *    `/wp-content/uploads/...` path so the Next.js route serves a restored local file or
+ *    database asset; a missing original returns 404 instead of fabricated product artwork
  */
 
 export const LEGACY_HOST_MARKERS = [
