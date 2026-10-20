@@ -4,7 +4,6 @@ import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { canQueryDatabase, db, markDatabaseUnavailable } from "@/db";
 import { mediaAssets } from "@/db/schema";
-import { renderProductSvg } from "@/lib/product-svg";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +26,8 @@ const MIME_BY_EXT: Record<string, string> = {
  *  2. Restored file in `public/media/<filename>`
  *  3. Uploaded asset in PostgreSQL `media_assets` matching `<filename>` (either
  *     bytea `data` stored in DB or redirect to Vercel Blob URL)
- *  4. Dynamic studio-grade SVG product illustration tailored to the exact
- *     product (brand, hardware schematic, specs, French & Arabic titles)
+ *  4. A 404 when the original file has not been mirrored yet. The app never
+ *     invents a replacement for a missing product photo.
  */
 export async function GET(
   _req: Request,
@@ -105,13 +104,13 @@ export async function GET(
     }
   }
 
-  // 4) Render a product-specific studio SVG illustration
-  const svg = renderProductSvg(rel);
-  return new NextResponse(svg, {
+  // 4) Never replace a missing product photo with fabricated artwork.
+  return new NextResponse("Original image has not been mirrored.", {
+    status: 404,
     headers: {
-      "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
-      "X-ATC-Image-Source": "generated-product-svg",
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-ATC-Image-Source": "missing-original",
       "X-ATC-Original-Path": `/wp-content/uploads/${rel}`,
     },
   });

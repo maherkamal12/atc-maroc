@@ -94,6 +94,31 @@ The admin dashboard shows the same state at the top of `/admin`.
 3. Deploy. The build does not require a database: connections are opened lazily on the first
    query, so `/sitemap.xml` and the other routes build even when `DATABASE_URL` is unset.
 
+## Restore the original product photos before the DNS cutover
+
+The bundled catalog has 314 products and 280 distinct product/category image URLs. The original
+WordPress/WooCommerce host is still the source for the actual photos and product galleries. Keep
+`atc-maroc.com` pointed at that host until the mirror finishes; if DNS is switched first, the
+WordPress API and source files may no longer be reachable.
+
+From the repository root, run:
+
+```bash
+npm run fetch:product-images
+```
+
+The script reads the image paths already used by the bundled catalog, then asks the public
+WooCommerce Store API for each product's full image gallery. It downloads only first-party files
+under `https://atc-maroc.com/wp-content/uploads/` (no image search, outside image sources, or
+image generation), preserving their original paths in `public/wp-content/uploads/`. The app's
+existing `/wp-content/uploads/...` handler serves those restored files locally on Vercel.
+
+Wait for the script to report zero failures. Then commit/deploy the downloaded
+`public/wp-content/uploads/` files and test a product image on the Vercel deployment URL before
+changing DNS. For the final static mirror, remove any `LEGACY_IMAGE_BASE`,
+`NEXT_PUBLIC_LEGACY_IMAGE_BASE`, `NEXT_PUBLIC_IMAGE_PROXY`, or `IMAGE_PROXY_BASE` override from
+Vercel so image requests resolve to the local files instead of the old host.
+
 ## Admin area
 
 `/admin` is protected by a password (`ADMIN_PASSWORD`, default `atc2026`). The login form shows
