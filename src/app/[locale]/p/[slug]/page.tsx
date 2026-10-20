@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import { getCustomPageBySlug, parseSections } from "@/lib/pages";
 import { t } from "@/lib/i18n";
@@ -72,8 +73,7 @@ export default async function CustomPublicPage({
               >
                 <div className="overflow-hidden rounded-2xl bg-slate-100">
                   {block.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={block.image} alt={heading} className="h-64 w-full object-cover md:h-80" />
+                    <SafeImage src={block.image} alt={heading} className="h-64 w-full object-cover md:h-80" />
                   ) : (
                     <div className="grid h-64 place-items-center text-slate-400 md:h-80">image</div>
                   )}

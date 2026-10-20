@@ -296,6 +296,56 @@ export async function replaceImageEverywhere(from: string, to: string): Promise<
   }
 }
 
+export async function replaceImagePrefixEverywhere(
+  fromPrefix: string,
+  toPrefix: string,
+): Promise<boolean> {
+  await ensureSeeded();
+  const cleanFrom = fromPrefix.trim().replace(/\/$/, "");
+  const cleanTo = toPrefix.trim().replace(/\/$/, "");
+  if (!canQueryDatabase() || !cleanFrom || !cleanTo) return false;
+  try {
+    const { sql } = await import("drizzle-orm");
+    const pattern = `${cleanFrom}%`;
+    await db.execute(
+      sql`UPDATE products SET image = REPLACE(image, ${cleanFrom}, ${cleanTo}) WHERE image LIKE ${pattern}`,
+    );
+    await db.execute(
+      sql`UPDATE categories SET image = REPLACE(image, ${cleanFrom}, ${cleanTo}) WHERE image LIKE ${pattern}`,
+    );
+    await db.execute(
+      sql`UPDATE services SET image = REPLACE(image, ${cleanFrom}, ${cleanTo}) WHERE image LIKE ${pattern}`,
+    );
+    await db.execute(
+      sql`UPDATE posts SET image = REPLACE(image, ${cleanFrom}, ${cleanTo}) WHERE image LIKE ${pattern}`,
+    );
+    return true;
+  } catch (error) {
+    markDatabaseUnavailable("replaceImagePrefixEverywhere", error);
+    return false;
+  }
+}
+
+export async function relinkUploadedFileByFilename(
+  filename: string,
+  newUrl: string,
+): Promise<void> {
+  const cleanName = filename.trim();
+  if (!canQueryDatabase() || !cleanName || !newUrl) return;
+  try {
+    const { sql } = await import("drizzle-orm");
+    const suffixPattern = `%/${cleanName}`;
+    await db.execute(
+      sql`UPDATE products SET image = ${newUrl} WHERE image LIKE ${suffixPattern} AND image LIKE '%/wp-content/uploads/%'`,
+    );
+    await db.execute(
+      sql`UPDATE categories SET image = ${newUrl} WHERE image LIKE ${suffixPattern} AND image LIKE '%/wp-content/uploads/%'`,
+    );
+  } catch {
+    /* best effort */
+  }
+}
+
 export type MenuRow = {
   id: number;
   href: string;

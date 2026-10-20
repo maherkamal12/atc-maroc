@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero, SectionHeading } from "@/components/ui";
 import { getPosts, postTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
@@ -57,8 +58,7 @@ export default async function DesignPage({ params }: { params: Promise<{ locale:
               }`}
             >
               <div className="overflow-hidden rounded-2xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.image} alt={item.title} className="h-64 w-full object-cover md:h-80" loading="lazy" />
+                <SafeImage src={item.image} alt={item.title} className="h-64 w-full object-cover md:h-80" loading="lazy" />
               </div>
               <div className="flex flex-col justify-center">
                 <h2 className="text-xl font-extrabold text-brand-950 md:text-2xl">{item.title}</h2>

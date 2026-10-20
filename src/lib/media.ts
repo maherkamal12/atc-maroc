@@ -6,6 +6,7 @@ import { canQueryDatabase, db, isDatabaseConfigured, markDatabaseUnavailable } f
 import { contentBlocks, customPages, mediaAssets, type MediaAsset } from "@/db/schema";
 import { ensureSeeded } from "@/db/seed";
 import { listMediaRefs } from "@/lib/admin-data";
+import { relinkUploadedFileByFilename } from "@/lib/cms";
 
 export type LibraryItem = {
   id: number;
@@ -74,15 +75,18 @@ function isServerlessFs() {
 }
 
 export function mediaUploadHint() {
-  if (blobToken()) return "تُرفع الملفات إلى Vercel Blob.";
-  if (isServerlessFs()) {
-    return "على Vercel أضيفوا BLOB_READ_WRITE_TOKEN (Storage → Blob) للرفع. إلى ذلك الحين سجّلوا رابط صورة أدناه.";
+  if (blobToken()) return "تُرفع الملفات إلى Vercel Blob، وتُربط تلقائياً بالمنتجات المطابقة لنفس اسم الملف.";
+  if (isServerlessFs() && isDatabaseConfigured()) {
+    return "تُحفظ الصور في قاعدة البيانات (أو Vercel Blob عند إضافة BLOB_READ_WRITE_TOKEN)، وتُربط تلقائياً بالمنتجات المطابقة لاسم الملف.";
   }
-  return "تخزين محلي /public/media أثناء التطوير. في الإنتاج استخدموا Vercel Blob.";
+  if (isServerlessFs()) {
+    return "على Vercel أضيفوا BLOB_READ_WRITE_TOKEN (Storage → Blob) أو اربطوا قاعدة البيانات للرفع.";
+  }
+  return "تخزين محلي /public/media أثناء التطوير، مع ربط تلقائي بالمنتجات التي تحمل نفس اسم الملف.";
 }
 
 export function mediaUploadsEnabled() {
-  return Boolean(blobToken()) || !isServerlessFs();
+  return Boolean(blobToken()) || !isServerlessFs() || isDatabaseConfigured();
 }
 
 export function logoUploadHint() {
@@ -120,6 +124,7 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
         size: file.size,
         storage: "blob",
       });
+      await relinkUploadedFileByFilename(file.name, blob.url);
       return { url: blob.url };
     } catch (error) {
       return { error: error instanceof Error ? error.message : "Échec Blob" };
@@ -127,10 +132,36 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
   }
 
   if (isServerlessFs()) {
-    return {
-      error:
-        "لا يمكن الكتابة على القرص في Vercel. أنشئوا Blob وأضيفوا BLOB_READ_WRITE_TOKEN، أو الصقوا رابط صورة.",
-    };
+    await ensureSeeded();
+    if (!canQueryDatabase()) {
+      return {
+        error:
+          "لا يمكن الكتابة على القرص في Vercel. أنشئوا Blob وأضيفوا BLOB_READ_WRITE_TOKEN، أو اربطوا قاعدة البيانات.",
+      };
+    }
+
+    const key = randomUUID();
+    const url = `/api/media/${key}`;
+    try {
+      const [asset] = await db
+        .insert(mediaAssets)
+        .values({
+          url,
+          pathname: `database/${key}`,
+          filename: file.name,
+          contentType: uploadContentType(file),
+          size: file.size,
+          storage: "database",
+          data: Buffer.from(await file.arrayBuffer()),
+        })
+        .returning({ url: mediaAssets.url });
+      if (!asset) return { error: "تعذر حفظ الملف في قاعدة البيانات." };
+      await relinkUploadedFileByFilename(file.name, asset.url);
+      return { url: asset.url };
+    } catch (error) {
+      markDatabaseUnavailable("storeUploadDb", error);
+      return { error: "تعذر تخزين الصورة في قاعدة البيانات." };
+    }
   }
 
   const dir = path.join(process.cwd(), "public", "media");
@@ -147,6 +178,7 @@ export async function storeUpload(file: File): Promise<{ url: string } | { error
       size: file.size,
       storage: "local",
     });
+    await relinkUploadedFileByFilename(file.name, url);
     return { url };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Échec d'écriture locale" };

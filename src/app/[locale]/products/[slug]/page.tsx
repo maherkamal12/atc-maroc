@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToQuote } from "@/components/add-to-cart";
 import { ProductCard } from "@/components/product-card";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import {
   categoryName,
@@ -61,10 +62,10 @@ export default async function ProductDetailPage({
       <section className="section">
         <div className="wrap grid gap-10 lg:grid-cols-2">
           <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <SafeImage
               src={product.image}
               alt={productName(product, locale)}
+              categorySlug={product.categorySlug}
               className="h-80 w-full bg-white object-contain p-6 md:h-[28rem]"
             />
           </div>
@@ -158,11 +159,12 @@ export default async function ProductDetailPage({
                     name: productName(item, locale),
                     nameAr: item.nameAr,
                     nameFr: item.nameFr,
-                    description: productDesc(item, locale),
-                    image: item.image,
-                    brand: item.brand,
-                    inStock: item.inStock,
-                  }}
+                  description: productDesc(item, locale),
+                  image: item.image,
+                  brand: item.brand,
+                  inStock: item.inStock,
+                  categorySlug: item.categorySlug,
+                }}
                   labels={{
                     addToQuote: tr.addToQuote,
                     added: tr.added,

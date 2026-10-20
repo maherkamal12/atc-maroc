@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { SafeImage } from "@/components/safe-image";
 import { deleteMediaAction } from "../catalog-actions";
 import type { LibraryItem } from "@/lib/media";
 import { UploadForm } from "./upload-form";
@@ -96,8 +97,7 @@ export function MediaLibrary({
         {filtered.map((item) => (
           <article key={item.url} className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <button type="button" className="block w-full" onClick={() => setPreview(item)}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.url} alt={item.filename} className="h-40 w-full bg-slate-100 object-cover" />
+              <SafeImage src={item.url} alt={item.filename} className="h-40 w-full bg-slate-100 object-contain p-2" />
             </button>
             <div className="space-y-2 p-3">
               <p className="truncate text-sm font-bold text-brand-950" title={item.filename}>
@@ -165,8 +165,7 @@ export function MediaLibrary({
             className="max-h-[90vh] w-full max-w-3xl overflow-auto rounded-2xl bg-white p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview.url} alt={preview.filename} className="max-h-[70vh] w-full object-contain" />
+            <SafeImage src={preview.url} alt={preview.filename} className="max-h-[70vh] w-full object-contain" />
             <p className="mt-3 break-all font-mono text-xs text-slate-500">{preview.url}</p>
             <div className="mt-3 flex gap-2">
               <button type="button" className="btn btn-primary !py-2 !text-xs" onClick={() => copyUrl(preview.url)}>

@@ -30,6 +30,7 @@ import {
 } from "@/lib/admin-data";
 import {
   replaceImageEverywhere,
+  replaceImagePrefixEverywhere,
   saveContentBlocks,
   saveNavRows,
   saveSettings,
@@ -380,6 +381,17 @@ export async function replaceMediaAction(_prev: ActionState, formData: FormData)
   revalidatePublic();
   revalidatePath("/admin/media");
   if (!ok) return { error: "Remplacement impossible (base indisponible)." };
+  return { error: null, ok: true };
+}
+
+export async function replaceMediaPrefixAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await guard();
+  const fromPrefix = str(formData, "fromPrefix");
+  const toPrefix = str(formData, "toPrefix");
+  const ok = await replaceImagePrefixEverywhere(fromPrefix, toPrefix);
+  revalidatePublic();
+  revalidatePath("/admin/media");
+  if (!ok) return { error: "تعذر استبدال النطاق في قاعدة البيانات." };
   return { error: null, ok: true };
 }
 

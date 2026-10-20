@@ -1,5 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { SafeImage } from "./safe-image";
+import { heroFallback } from "@/lib/images";
+import { heroImages } from "@/db/seed-data";
 
 export function SectionHeading({
   eyebrow,
@@ -57,10 +60,15 @@ export function PageHero({
   breadcrumbs: { href?: string; label: string }[];
   image: string;
 }) {
+  const bgSrc = heroFallback(image, heroImages.solar);
   return (
     <section className="relative overflow-hidden bg-brand-950">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+      <SafeImage
+        src={bgSrc}
+        alt=""
+        fallbackSrc="/placeholders/hero-fallback.svg"
+        className="absolute inset-0 h-full w-full object-cover opacity-25"
+      />
       <div className="absolute inset-0 bg-gradient-to-r from-brand-950 via-brand-950/85 to-brand-900/60" />
       <div className="wrap relative py-14 md:py-20">
         <h1 className="text-3xl font-extrabold text-white md:text-5xl">{title}</h1>

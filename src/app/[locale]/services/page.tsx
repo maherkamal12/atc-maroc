@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SafeImage } from "@/components/safe-image";
 import { PageHero } from "@/components/ui";
 import { getServices, serviceBullets, serviceShort, serviceTitle } from "@/lib/data";
 import { t } from "@/lib/i18n";
@@ -38,8 +39,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
               }`}
             >
               <div className="relative overflow-hidden rounded-2xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <SafeImage
                   src={service.image}
                   alt={serviceTitle(service, locale)}
                   className="h-64 w-full object-cover md:h-full"

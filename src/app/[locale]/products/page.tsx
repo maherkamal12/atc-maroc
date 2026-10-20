@@ -145,6 +145,7 @@ export default async function ProductsPage({
                       image: product.image,
                       brand: product.brand,
                       inStock: product.inStock,
+                      categorySlug: product.categorySlug,
                     }}
                     labels={{
                       addToQuote: tr.addToQuote,

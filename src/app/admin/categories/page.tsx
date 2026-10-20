@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SafeImage } from "@/components/safe-image";
 import { AdminHeader, DbBanner } from "../_ui";
 import { deleteCategoryAction } from "../catalog-actions";
 import { countProductsByCategory, getCategories } from "@/lib/data";
@@ -36,8 +37,7 @@ export default async function CategoriesPage({
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     {c.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={c.image} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                      <SafeImage src={c.image} alt="" categorySlug={c.slug} className="h-10 w-10 rounded-lg object-cover" />
                     ) : (
                       <span className="text-xl">{c.icon}</span>
                     )}
