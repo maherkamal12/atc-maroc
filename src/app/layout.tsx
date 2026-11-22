@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -37,7 +38,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         />
         <meta name="theme-color" content="#081b3d" />
       </head>
-      <body className="bg-white text-slate-800 antialiased">{children}</body>
+      <body className="bg-white text-slate-800 antialiased">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
