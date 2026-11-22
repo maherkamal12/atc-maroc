@@ -15,11 +15,12 @@
     "fetch:product-images": "node scripts/fetch-product-images.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "2.0.0",
     "dotenv": "17.3.1",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "pg": "8.20.0",
-    "@vercel/blob": "2.0.0",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
